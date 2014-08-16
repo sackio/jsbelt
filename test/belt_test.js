@@ -339,6 +339,43 @@ exports['unitTests'] = {
           return cb();
         })(1, 2, {'test': 'a'}, cb);
       }
+    , function(cb){
+        return (function(arg1, arg2, opts, callback){
+          var args = Belt.argulint(arguments, {
+                       'defaults': {'first': 4, 'second': 6}
+                     , 'templates': {'first': 0}
+                     });
+
+          test.ok(args.first === arguments[0]);
+          test.ok(args.second === 6);
+          return cb();
+        })(1, 2, {'test': 'a'}, cb);
+      }
+    , function(cb){
+        return (function(arg1, arg2, opts, callback){
+          var args = Belt.argulint(arguments, {
+                       'defaults': {'first': 4, 'second': 6}
+                     , 'templates': {'first': 0, 'second': function(args){ return this.first + args[1]; }}
+                     });
+
+          test.ok(args.first === arguments[0]);
+          test.ok(args.second === args.first + arguments[1]);
+          return cb();
+        })(1, 2, {'test': 'a'}, cb);
+      }
+    , function(cb){
+        return (function(arg1, arg2, opts, callback){
+          var args = Belt.argulint(arguments, {
+                       'defaults': {'first': 4, 'second': 6}
+                     , 'templates': {'first': 0, 'second': function(args){ return this.first + args[1]; }}
+                     , 'validators': {'first': function(){ return this % 2 !== 0; }}
+                     });
+
+          test.ok(args.first === arguments[0]);
+          test.ok(args.second === args.first + arguments[1]);
+          return cb();
+        })(1, 2, {'test': 'a'}, cb);
+      }
     ], function(err){
      test.ok(!err);
      return test.done();
