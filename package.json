@@ -1,0 +1,38 @@
+{
+  "name": "jsbelt",
+  "description": "opinionated and handy js toolbelt",
+  "version": "0.0.1",
+  "homepage": "",
+  "author": {
+    "name": "Ben Sack",
+    "email": "bsack@pushbuild.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/sackio/jsbelt.git"
+  },
+  "bugs": {
+    "url": ""
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "lib/belt",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "grunt nodeunit"
+  },
+  "devDependencies": {
+    "grunt-contrib-jshint": "~0.6.4",
+    "grunt-contrib-nodeunit": "~0.2.0",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt": "~0.4.5",
+    "async": "*"
+  },
+  "keywords": []
+}
