@@ -332,6 +332,13 @@ exports['unitTests'] = {
           return cb();
         })(1, 2, {'test': 'a'});
       }
+    , function(cb){
+        return (function(arg1, arg2, opts, callback){
+          var args = Belt.argulint(arguments, {'defaults': {'first': 4}});
+          test.ok(args.first === 4);
+          return cb();
+        })(1, 2, {'test': 'a'}, cb);
+      }
     ], function(err){
      test.ok(!err);
      return test.done();
