@@ -5,10 +5,10 @@ opinionated and handy js toolbelt
 commonly used methods, utilities, conveniences, and hacks for node and the browser
 
 ## Getting Started
-Install the module with: `npm install belt`
+Install the module with: `npm install jsbelt`
 
 ```javascript
-var belt = require('belt');
+var Belt = require('jsbelt');
 ```
 
 ## License
