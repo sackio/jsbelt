@@ -1,4 +1,4 @@
-# jsBelt [![Build Status](https://secure.travis-ci.org//jsbelt.png?branch=master)](http://travis-ci.org//jsbelt)
+# jsBelt [![Build Status](https://secure.travis-ci.org/sackio/jsbelt.png?branch=master)](http://travis-ci.org/sackio/jsbelt)
 
 opinionated and handy js toolbelt
 
