@@ -135,7 +135,7 @@ exports['unitTests'] = {
     test.ok(!Belt.deepProp(obj, 'does.not.exist'));
     test.ok(Belt.deepProp(obj, '.deep.1') === 2);
     test.ok(!Belt.deepProp(obj, '.deep.1.'));
-    test.deepEqual(Belt.deepProp(obj), obj);
+    test.ok(Belt.deepEqual(Belt.deepProp(obj), obj));
 
     return test.done();
   }
@@ -187,18 +187,18 @@ exports['unitTests'] = {
     var array = Belt.sequence(function(i){ return i; }, 20);
 
     test.ok(array.length === 20);
-    test.deepEqual(array, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]);
+    test.ok(Belt.deepEqual(array, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]));
 
     array = Belt.sequence(function(i, count){ return count; }, 5);
     test.ok(array.length === 5);
-    test.deepEqual(array, [5, 5, 5, 5, 5]);
+    test.ok(Belt.deepEqual(array, [5, 5, 5, 5, 5]));
 
     var fibSeq = Belt.sequence(function(i, count){
       if (i < 2) return 1;
       return this[i - 2] + this[i - 1];
     }, 10);
     test.ok(fibSeq.length === 10);
-    test.deepEqual(fibSeq, [1, 1, 2, 3, 5, 8, 13, 21, 34, 55]);
+    test.ok(Belt.deepEqual(fibSeq, [1, 1, 2, 3, 5, 8, 13, 21, 34, 55]));
 
     return test.done();
   }
@@ -214,14 +214,26 @@ exports['unitTests'] = {
 
     return test.done();
   }
+, 'defArray': function(test) {
+    test.expect(21);
+
+    var array = Belt.defArray(20, 5);
+
+    test.ok(array.length === 20);
+    array.forEach(function(e){
+      test.ok(e === 5);
+    });
+
+    return test.done();
+  }
 , 'toArray and deepEqual': function(test) {
     test.expect(4);
 
     var array = [1, 2, 3]
       , a = 3;
 
-    test.deepEqual(Belt.toArray(array), array);
-    test.deepEqual(Belt.toArray(a), [3]);
+    test.ok(Belt.deepEqual(Belt.toArray(array), array));
+    test.ok(Belt.deepEqual(Belt.toArray(a), [3]));
     test.ok(Belt.deepEqual(Belt.toArray(array), array));
     test.ok(Belt.deepEqual(Belt.toArray(a), [3]));
 
