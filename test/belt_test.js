@@ -192,12 +192,18 @@ exports['unitTests'] = {
     return test.done();
   }
 , 'chainCall': function(test) {
-    test.expect(2);
+    test.expect(5);
 
     var t = Belt._chain('test', ['replace', /test/, 'pass'], ['replace', /pass/, 'shoe']);
     test.ok(t === 'shoe');
     t = Belt._chain(t, ['replace', /test/, 'pass'], ['madeup', /pass/, 'shoe']);
     test.ok(t === undefined);
+
+    var o = {'object': 'version'};
+    t = {'object': 2};
+    test.ok(Belt._call(o, 'object.match', /^version$|^output:/i));
+    test.ok(!Belt._call(o, 'object.doesnotexist', /^version$|^output:/i));
+    test.ok(!Belt._call(t, 'object.match', /^version$|^output:/i));
 
     return test.done();
   }
@@ -309,7 +315,7 @@ exports['unitTests'] = {
 
     for (i = 0; i < 500; i++){
       rand = Belt.random_string(20);
-      console.log(rand);
+      //console.log(rand);
       test.ok(rand.length === 20);
     }
 
