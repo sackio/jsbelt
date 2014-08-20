@@ -181,6 +181,26 @@ exports['unitTests'] = {
 
     return test.done();
   }
+, 'deepCall': function(test) {
+    test.expect(2);
+
+    var t = Belt._call('test', 'replace', /test/, 'pass');
+    test.ok(t === 'pass');
+    t = Belt._call(t, 'madeupfunction', 1, 2, 3);
+    test.ok(t === undefined);
+
+    return test.done();
+  }
+, 'chainCall': function(test) {
+    test.expect(2);
+
+    var t = Belt._chain('test', ['replace', /test/, 'pass'], ['replace', /pass/, 'shoe']);
+    test.ok(t === 'shoe');
+    t = Belt._chain(t, ['replace', /test/, 'pass'], ['madeup', /pass/, 'shoe']);
+    test.ok(t === undefined);
+
+    return test.done();
+  }
 , 'sequence': function(test) {
     test.expect(6);
 
@@ -248,6 +268,49 @@ exports['unitTests'] = {
     test.ok(Object.keys(obj).length === keys.length);
     for (var k in obj){
       test.ok(obj[k] === 4);
+    }
+
+    return test.done();
+  }
+, 'splitArray': function(test){
+    test.expect(2);
+
+    var array = [1, 2, 3, 4, 5];
+    array = Belt.splitArray(array, 2);
+
+    test.ok(array.length === 3 && array[2][0] === 5 && array[2].length === 1);
+    test.ok(array[0].length === 2);
+
+    return test.done();
+  }
+, 'random': function(test){
+    //test.expect(500);
+    var rand, i;
+
+    for (i = 0; i < 500; i++){
+      rand = Belt.random_int(0, 100);
+      //console.log(rand);
+      test.ok(rand >= 0 && rand < 100);
+    }
+
+    for (i = 0; i < 500; i++){
+      rand = Belt.random_bool();
+      //console.log(rand);
+      test.ok(rand === true || rand === false);
+    }
+
+    var array = [1, 2, 3, 4, 5];
+
+    for (i = 0; i < 500; i++){
+      rand = Belt.random_els(array, 2);
+      //console.log(rand);
+      test.ok(rand.length === 2 && rand[0] < 6 && rand[0] > 0);
+    }
+
+    for (i = 0; i < 500; i++){
+      rand = Belt.random_string(20);
+      console.log(rand);
+      test.ok(rand.length === 20);
     }
 
     return test.done();
