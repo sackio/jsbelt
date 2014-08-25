@@ -207,6 +207,23 @@ exports['unitTests'] = {
 
     return test.done();
   }
+, 'deepFind': function(test) {
+    test.expect(10);
+    var t = {'deep': {'find': 'this'}};
+
+    test.ok(Belt._find(t, 'deepfind') === 'this');
+    test.ok(Belt._find(t, 'de.e.pfi.n.d') === 'this');
+    test.ok(!Belt._find(t, 'de.e.pfi.n.d.notexistent'));
+    test.ok(!Belt._find(t, 'de.e.pf'));
+    test.ok(Belt.deepEqual(Belt._find(t, 'de.e.p...'), t.deep));
+    test.ok(Belt.deepEqual(Belt._find(t, '......'), t));
+    test.ok(Belt.deepEqual(Belt._find(t, undefined), t));
+    test.ok(Belt.deepEqual(Belt._find(t, ''), t));
+    test.ok(Belt.deepEqual(Belt._find('foobar', undefined), 'foobar'));
+    test.ok(!Belt._find('foobar', 'something.else.here'));
+
+    return test.done();
+  }
 , 'sequence': function(test) {
     test.expect(6);
 
