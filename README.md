@@ -25,7 +25,7 @@ Install the module with Bower for the browser: `bower install jsbelt`
 
 ### Variadic Functions
 
-* [`argulint`](#argulint) - get a handle variable arguments, options, and callbacks
+* [`argulint`](#argulint) - get a handle on variable arguments, options, and callbacks
 
 ### Functions & Callbacks
 
