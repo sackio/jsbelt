@@ -29,10 +29,11 @@ Install the module with Bower for the browser: `bower install jsbelt`
 
 ### Functions & Callbacks
 
-* [`noop`](#noop) - nothing to see here
-* [`callog`](#callog) - log any arguments to console
-* [`callwrap`](#callwrap) - wrap function so that only one argument (usually an error) gets applied
-* [`callset`](#callset) - wrap function so that a passed object/key is set to one argument before function is applied
+* [`np`](#noop) - nothing to see here
+* [`cl`](#callog) - log any arguments to console
+* [`cw`](#callwrap) - wrap function so that only one argument (usually an error) gets applied
+* [`cs`](#callset) - wrap function so that a passed object/key is set to one argument before function is applied
+* [`dcs`](#deepcallset) - wrap function so that a passed object/key is set to one argument's deep property before function is applied
 
 ### Deep Objects
 
@@ -109,14 +110,14 @@ Lint arguments
 ---------------------------------------
 
 <a name="noop" />
-### noop()
+### np()
 
 A noop function
 
 ---------------------------------------
 
 <a name="callwrap" />
-### callwrap(func, index, thisObj)
+### cw(func, index, thisObj)
 
 Wrapped callback -returns a wrapped function which will only call argument(s) at specified index (indices). Defaults to calling no arguments index can be an integer or array of integers to apply multiple arguments to wrapped function. thisObj is an optional object to bind to wrapped function
 
@@ -125,7 +126,7 @@ Useful for async flows where the arguments passed to a callback are unimportant
 ---------------------------------------
 
 <a name="callset" />
-### callset(func, obj, key, set_index, call_index, thisObj)
+### cs(func, obj, key, set_index, call_index, thisObj)
 
 Returns a wrapped function which sets a property in an object to an argument
 index in a callback, then calls a wrapped version of the original callback
@@ -138,6 +139,26 @@ index in a callback, then calls a wrapped version of the original callback
   call_index - the index (or indices) of the argument to pass to the wrapped
     function (default: undefined)
   thisObj - optional object to bind wrapped function to
+
+---------------------------------------
+
+<a name="deepcallset" />
+### dcs(func, obj, key, set_index, pStr, call_index, options)
+
+Returns a wrapped function which sets a property in an object to the deep property of an argument
+index in a callback, then calls a wrapped version of the original callback
+  Useful for async flows where it's helpful to capture the result of a callback (as a deep property of one of the arguments)
+  in a global and move to the next step
+  func - the function to be wrapped
+  obj - the object whose property to set
+  key - the property key to set
+  set_index - the index of the argument to set to the property (default: 1)
+  pStr - the deep property string of the selected argument
+  call_index - the index (or indices) of the argument to pass to the wrapped
+    function (default: undefined)
+  options - optional options object
+    thisObj - optional object to bind wrapped function to
+    err_on_miss - if deep property of argument is undefined, pass an error to the callback as first error
 
 ---------------------------------------
 

@@ -59,7 +59,7 @@ exports['unitTests'] = {
     });
   }
 , 'callset': function(test) {
-    test.expect(7);
+    test.expect(9);
 
     var globals = {};
 
@@ -93,6 +93,49 @@ exports['unitTests'] = {
         test.ok(arguments.length === 2);
         test.ok(num === 2);
         return cb();
+      }
+    , function(cb){
+        return Async.waterfall([
+          function(_cb){
+            return Belt.callset(_cb, globals, 'set_index', 1, 0)('hello', 2);
+          }
+        ], function(err){
+          test.ok(err === 'hello');
+          test.ok(globals.set_index === 2);
+
+          return cb();
+        });
+      }
+    ], function(err){
+     test.ok(!err);
+     return test.done();
+    });
+  }
+, 'deepcallset': function(test) {
+    //test.expect(9);
+
+    var globals = {};
+
+    return Async.waterfall([
+      function(cb){
+        return Belt.dcs(cb, globals, 'first', 0, 'foo.bar')({'foo': {'bar': 'baz'}}, 2, 3);
+      }
+    , function(cb){
+        test.ok(globals.first === 'baz');
+        return cb();
+      }
+    , function(cb){
+        return Belt.dcs(cb, globals, 'first', 0, 'foo.bar.0.test')({'foo': {'bar': 'baz'}}, 2, 3);
+      }
+    , function(cb){
+        test.ok(!globals.first);
+        return cb();
+      }
+    , function(cb){
+        return Belt.dcs(function(err){
+          test.ok(err);
+          return cb();
+        }, globals, 'first', 1, 'foo.bar.0.test', 0, {'err_on_miss': true})(null, {'foo': {'bar': 'baz'}});
       }
     ], function(err){
      test.ok(!err);
