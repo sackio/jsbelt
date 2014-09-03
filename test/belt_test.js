@@ -494,6 +494,18 @@ exports['unitTests'] = {
       }
     , function(cb){
         return (function(arg1, arg2, opts, callback){
+          var args = Belt.argulint(arguments);
+
+          test.ok(args.o.test);
+          test.ok(args.o.func);
+          test.ok(args.o.regex);
+          test.ok(args.o.date);
+
+          return cb();
+        })(1, 2, {'test': 'a', 'regex': /thisisaregex/g, 'date': new Date(), 'func': function(){ console.log('this is a function'); }}, cb);
+      }
+    , function(cb){
+        return (function(arg1, arg2, opts, callback){
           var args = Belt.argulint(arguments, {
                        'defaults': {'first': 4, 'second': 6}
                      , 'templates': {'first': 0, 'second': function(args){ return this.first + args[1]; }}
