@@ -534,4 +534,16 @@ exports['unitTests'] = {
      return test.done();
     });
   }
+, 'strings': function(test) {
+    test.expect(3);
+
+    var str = 'this is an uncapitalized string';
+    test.ok(Belt.capitalize(str) === 'This Is An Uncapitalized String');
+    str = 'string';
+    test.ok(Belt.capitalize(str) === 'String');
+    str = ' this  is an     uncapitalized     string';
+    test.ok(Belt.capitalize(str) === ' This  Is An     Uncapitalized     String');
+
+    return test.done();
+  }
 };

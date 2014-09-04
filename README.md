@@ -66,6 +66,7 @@ Install the module with Bower for the browser: `bower install jsbelt`
 
 * [`sanitize`](#sanitize) - convert any non-alphanumeric characters to a single space, lowercasing the result
 * [`alpha_match`](#defObj) - returns a regular expression that matches on the same alphanumeric characters (case-insensitive) regardless of non-alphanumerics
+* `capitalize(str)` - capitalize each word in a string
 
 ### TBD
 
@@ -86,26 +87,14 @@ Lint arguments
   * Last object is treated as 'options'. If not found, empty object is used.
   i.e. returns {'options': <last argument that was an object>, 'callback': <last argument that was a function>}
   Options:
-    * no_callback: do not define a callback
-    * callback: use as the callback
-    * no_options: do not define options
-    * options: use as options
-    * no_clone_options: do not make a deep copy of the options object
-    * defaults: object of default values for linted arguments, which are overridden if defined elsewhere.
-    * templates: object of functions for defining arguments. Keys are
-        argument names. Values are integers of argument indexes or
-        functions that get passed the arguments and options parameters passed 
-        initially, bound to an in-progress object of linted arguments. 
-        Template functions override other definitions.
-        Templates are called after defaults are populated.
-    * validators: object of functions (or objects) that are run to validate
-        linted arguments. If value is a function, function is bound to the
-        specified key in the linted arguments and passed the linted arguments
-        object, the original arguments object, and original options object.
-        If validator returns false, an error is thrown. If value is an object, 
-        'validator' key must be a function as described, 'error' is a key with
-        the error object to be thrown if validator returns false.
-        Validators are AFTER defaults are populated.
+   * no_callback: do not define a callback
+   * callback: use as the callback
+   * no_options: do not define options
+   * options: use as options
+   * no_clone_options: do not make a deep copy of the options object
+   * defaults: object of default values for linted arguments, which are overridden if defined elsewhere.
+   * templates: object of functions for defining arguments. Keys are argument names. Values are integers of argument indexes or functions that get passed the arguments and options parameters passed initially, bound to an in-progress object of linted arguments. Template functions override other definitions. Templates are called after defaults are populated.
+   * validators: object of functions (or objects) that are run to validate linted arguments. If value is a function, function is bound to the specified key in the linted arguments and passed the linted arguments object, the original arguments object, and original options object. If validator returns false, an error is thrown. If value is an object, 'validator' key must be a function as described, 'error' is a key with the error object to be thrown if validator returns false. Validators are AFTER defaults are populated.
 
 ---------------------------------------
 
