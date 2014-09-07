@@ -312,8 +312,8 @@ exports['unitTests'] = {
 
     return test.done();
   }
-, 'toArray and deepEqual': function(test) {
-    test.expect(6);
+, 'array methods': function(test) {
+    //test.expect(6);
 
     var array = [1, 2, 3]
       , a = 3;
@@ -327,6 +327,11 @@ exports['unitTests'] = {
 
     test.ok(Belt.deepEqual(Belt.deArray(array), array));
     test.ok(Belt.deepEqual(Belt.deArray(a2), a2[0]));
+
+    test.ok(Belt.deepEqual(Belt.map(array, function(e){ return 'hello' + e; }), ['hello1', 'hello2', 'hello3']));
+
+    var deepAr = [{'band': ['paul', 'george', 'john', 'ringo']}, 311, {'band': ['kris', 'kurt', 'dave']}];
+    test.ok(Belt.deepEqual(Belt.deepPluck(deepAr, 'band.2'), ['john', undefined, 'dave']));
 
     return test.done();
   }

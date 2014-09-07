@@ -55,6 +55,7 @@ Install the module with Bower for the browser: `bower install jsbelt`
 * [`toArray`](#toArray) - wrap non-array in an array, keep arrays unchanged
 * `deArray(obj)` - return only element of a single element array, or keep as array if more than one element
 * [`splitArray`](#splitArray) - split array into subsets of a certain length, including any remainder
+* `deepPluck(array, prop_string)` - pluck a deep property from each element in an array
 
 ### Randomness
 
