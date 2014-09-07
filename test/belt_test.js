@@ -313,7 +313,7 @@ exports['unitTests'] = {
     return test.done();
   }
 , 'toArray and deepEqual': function(test) {
-    test.expect(4);
+    test.expect(6);
 
     var array = [1, 2, 3]
       , a = 3;
@@ -322,6 +322,11 @@ exports['unitTests'] = {
     test.ok(Belt.deepEqual(Belt.toArray(a), [3]));
     test.ok(Belt.deepEqual(Belt.toArray(array), array));
     test.ok(Belt.deepEqual(Belt.toArray(a), [3]));
+
+    var a2 = [1];
+
+    test.ok(Belt.deepEqual(Belt.deArray(array), array));
+    test.ok(Belt.deepEqual(Belt.deArray(a2), a2[0]));
 
     return test.done();
   }

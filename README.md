@@ -53,6 +53,7 @@ Install the module with Bower for the browser: `bower install jsbelt`
 * [`sequence`](#sequence) - create an array based on an iterator and iteration count
 * [`defArray`](#defArray) - create an array of a default value for each element
 * [`toArray`](#toArray) - wrap non-array in an array, keep arrays unchanged
+* `deArray(obj)` - return only element of a single element array, or keep as array if more than one element
 * [`splitArray`](#splitArray) - split array into subsets of a certain length, including any remainder
 
 ### Randomness
