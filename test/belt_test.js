@@ -556,4 +556,24 @@ exports['unitTests'] = {
 
     return test.done();
   }
+, 'json strings': function(test) {
+
+    var str = 'this is an uncapitalized string';
+    test.ok(!Belt.isValidJSON(str));
+    str = '"this is an uncapitalized string"';
+    test.ok(Belt.isValidJSON(str));
+
+    var objstr = '{test: [1, 2, 3, 4]}';
+    test.ok(!Belt.isValidJSON(objstr));
+    objstr = '{"test": [1, 2, 3, 4]}';
+    test.ok(Belt.isValidJSON(objstr));
+    objstr = '';
+    test.ok(Belt.isValidJSON(objstr));
+
+    objstr = '{test: [1, 2, 3, 4]}';
+    test.ok(Belt.parseJSON(objstr).toString() === 'Error: Invalid JSON');
+    objstr = '{"test": [1, 2, 3, 4]}';
+    test.ok(Belt.deepEqual(Belt.parseJSON(objstr), {test: [1, 2, 3, 4]}));
+    return test.done();
+  }
 };

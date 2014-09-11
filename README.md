@@ -69,6 +69,8 @@ Install the module with Bower for the browser: `bower install jsbelt`
 * [`sanitize`](#sanitize) - convert any non-alphanumeric characters to a single space, lowercasing the result
 * [`alpha_match`](#defObj) - returns a regular expression that matches on the same alphanumeric characters (case-insensitive) regardless of non-alphanumerics
 * `capitalize(str)` - capitalize each word in a string
+* `isValidJSON(str)` - returns true if `str` is valid JSON
+* `parseJSON(str)` - returns JSON or an error if JSON was invalid
 
 ### TBD
 
