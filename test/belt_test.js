@@ -142,6 +142,43 @@ exports['unitTests'] = {
      return test.done();
     });
   }
+, 'deepcalldeepset': function(test) {
+    //test.expect(9);
+
+    var globals = {};
+
+    return Async.waterfall([
+      function(cb){
+        return Belt.dcds(cb, globals, 'first.monkey', 0, 'foo.bar')({'foo': {'bar': 'baz'}}, 2, 3);
+      }
+    , function(cb){
+        test.ok(globals.first.monkey === 'baz');
+        return cb();
+      }
+    , function(cb){
+        return Belt.dcds(cb, globals, 'first.elephant', 0, 'foo.bar.0.test')({'foo': {'bar': 'baz'}}, 2, 3);
+      }
+    , function(cb){
+        test.ok(!globals.first.elephant);
+        return cb();
+      }
+    , function(cb){
+        return Belt.dcds(function(err){
+          test.ok(err);
+          return cb();
+        }, globals, 'first.donkey.0.pie', 1, 'foo.bar.0.test', 0, {'err_on_miss': true})(null, {'foo': {'bar': 'baz'}});
+      }
+    , function(cb){
+        return Belt.dcds(function(err){
+          test.ok(err);
+          return cb();
+        }, globals, 'first.donkey.0.pie', 1, 'foo.bar.0.test', 0)(true, {'foo': {'bar': 'baz'}});
+      }
+    ], function(err){
+     test.ok(!err);
+     return test.done();
+    });
+  }
 , 'copy': function(test) {
     test.expect(6);
 
@@ -574,6 +611,41 @@ exports['unitTests'] = {
     test.ok(Belt.parseJSON(objstr).toString() === 'Error: Invalid JSON');
     objstr = '{"test": [1, 2, 3, 4]}';
     test.ok(Belt.deepEqual(Belt.parseJSON(objstr), {test: [1, 2, 3, 4]}));
+    return test.done();
+  }
+, 'deepObj': function(test){
+    var obj = Belt.deepObj(['first.one.two.three', 'happy.wag', 'first.one.done']
+                          , [1, 2, 3]);
+
+    test.ok(obj.first.one.two.three === 1);
+    test.ok(obj.first.one.done === 3);
+    test.ok(obj.happy.wag === 2);
+
+    obj = Belt.deepObj(['first.one.two.three', 'happy.wag', 'first.one.done']);
+
+    test.ok(!obj.first.one.two.three);
+    test.ok(!obj.first.one.done);
+    test.ok(!obj.happy.wag);
+
+    obj = Belt.deepObj(['first.one.two.three', 'happy.wag', 'first.one.done'], [1]);
+
+    test.ok(obj.first.one.two.three === 1);
+    test.ok(!obj.first.one.done);
+    test.ok(!obj.happy.wag);
+
+    obj = Belt.deepObj({'first.one.two.three': 1, 'happy.wag': undefined, 'first.one.done': undefined});
+
+    test.ok(obj.first.one.two.three === 1);
+    test.ok(!obj.first.one.done);
+    test.ok(!obj.happy.wag);
+
+    return test.done();
+  },
+  'extend': function(test){
+    var obj = Belt.extend({'one': 1}, {'one': 2}, {'one': 3});
+    test.ok(obj.one === 3);
+    var obj2 = Belt.extend({'one': 1}, [{'one': 2}, {'one': 3}]);
+    test.ok(obj2.one === 3);
     return test.done();
   }
 };

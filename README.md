@@ -34,12 +34,14 @@ Install the module with Bower for the browser: `bower install jsbelt`
 * [`cw`](#callwrap) - wrap function so that only one argument (usually an error) gets applied
 * [`cs`](#callset) - wrap function so that a passed object/key is set to one argument before function is applied
 * [`dcs`](#deepcallset) - wrap function so that a passed object/key is set to one argument's deep property before function is applied
+* [`dcds`](#) - wrap function so that a passed object/deep property is set to one argument's deep property before function is applied
 
 ### Deep Objects
 
 * [`copy`](#copy) - fast deep object copying
 * [`extend`](#extend) - similar to Underscore's method (didn't want to make Underscore a dependency)
 * [`defObj`](#defObj) - create an object of specified keys with each key set to a default value
+* [`deepObj`](#) - create an object from arrays (or an object) of deep properties and their values.
 * [`deepEqual`](#deepEqual) - fast deep equality checking
 * [`_get`](#_get) - get a deep property for an object, if it exists
 * [`_set`](#_set) - set a deep property for an object, creating nested objects as necessary
