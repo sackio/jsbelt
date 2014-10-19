@@ -647,5 +647,12 @@ exports['unitTests'] = {
     var obj2 = Belt.extend({'one': 1}, [{'one': 2}, {'one': 3}]);
     test.ok(obj2.one === 3);
     return test.done();
+  },
+  'circular_ref': function(test){
+    var o = {};
+    o.o = o;
+    test.ok(Belt.stringify(o));
+    test.throws(function(){ return JSON.stringify(o); });
+    return test.done();
   }
 };
