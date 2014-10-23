@@ -655,4 +655,15 @@ exports['unitTests'] = {
     test.throws(function(){ return JSON.stringify(o); });
     return test.done();
   }
+, 'deepEqual': function(test){
+    test.ok(Belt.deepEqual(4, 4));
+    test.ok(!Belt.deepEqual(234, 4));
+    test.ok(!Belt.deepEqual(4.10, 4));
+    test.ok(!Belt.deepEqual("4", 4));
+    test.ok(Belt.deepEqual(new Date(), new Date()));
+    test.ok(!Belt.deepEqual(new Date() + 332323, new Date()));
+    test.ok(Belt.deepEqual(/test/, /test/));
+    test.ok(!Belt.deepEqual(/test/i, /test/));
+    return test.done();
+  }
 };
