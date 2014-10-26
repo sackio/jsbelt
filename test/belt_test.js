@@ -666,4 +666,24 @@ exports['unitTests'] = {
     test.ok(!Belt.deepEqual(/test/i, /test/));
     return test.done();
   }
+, 'find': function(test){
+    var ar = [1, 2, 3, 'apple', {'candy': 'cane'}, [1, 2]];
+    test.ok(Belt.find(ar, 'apple') === 'apple');
+    test.ok(Belt.find(ar, 1) === 1);
+    test.ok(!Belt.find(ar, 'orange'));
+    test.ok(Belt.deepEqual(Belt.find(ar, [1, 2]), [1, 2]));
+    test.ok(!Belt.find(null, 'orange'));
+    var el = Belt.find(ar, [1, 2]);
+    el[1] = 'a';
+    test.ok(Belt.deepEqual(Belt.find(ar, [1, 'a']), [1, 'a']));
+    return test.done();
+  }
+, 'callshift': function(test){
+    var ap = function(a, b, c, d){ return (a || ' ') + (b || ' ') + (c || ' ') + (d || ' '); };
+    test.ok(Belt.csh(ap, {0: 2})('a', 'b', 'c', 'd') === 'c   ');
+    test.ok(Belt.csh(ap, {0: 2, 1: 0})('a', 'b', 'c', 'd') === 'ca  ');
+    test.ok(Belt.csh(ap, {0: 0, 1: 0, 2: 0})('a', 'b', 'c', 'd') === 'aaa ');
+    test.ok(true);
+    return test.done();
+  }
 };
