@@ -683,7 +683,8 @@ exports['unitTests'] = {
     test.ok(Belt.csh(ap, {0: 2})('a', 'b', 'c', 'd') === 'c   ');
     test.ok(Belt.csh(ap, {0: 2, 1: 0})('a', 'b', 'c', 'd') === 'ca  ');
     test.ok(Belt.csh(ap, {0: 0, 1: 0, 2: 0})('a', 'b', 'c', 'd') === 'aaa ');
-    test.ok(true);
+    test.ok(Belt.csh(ap, {0: 'dog', 1: 0, 2: 0})('a', 'b', 'c', 'd') === 'dogaa ');
+    test.ok(Belt.csh(ap, {0: 'dog', 1: 0, 2: 'cat', 19: 'frog'})('a', 'b', 'c', 'd') === 'dogacat ');
     return test.done();
   }
 };
