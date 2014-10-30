@@ -683,6 +683,9 @@ exports['unitTests'] = {
     , function(a, b, c){ return {0: b, 1: a, 2: '9'}; }
     ])('a', 'b', 'c', 'd') === 'bz9 ');
 
+    test.ok(Belt.csh(ap, {0: function(a){ return a === 'a' ? 'snap' : 'foo'; }, 1: 0, 2: 0})
+    ('a', 'b', 'c', 'd') === 'snapaa ');
+
     return test.done();
   }
 };
