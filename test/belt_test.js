@@ -665,6 +665,24 @@ exports['unitTests'] = {
     test.ok(Belt.csh(ap, {0: 0, 1: 0, 2: 0})('a', 'b', 'c', 'd') === 'aaa ');
     test.ok(Belt.csh(ap, {0: 'dog', 1: 0, 2: 0})('a', 'b', 'c', 'd') === 'dogaa ');
     test.ok(Belt.csh(ap, {0: 'dog', 1: 0, 2: 'cat', 19: 'frog'})('a', 'b', 'c', 'd') === 'dogacat ');
+
+    var gb = {};
+    test.ok(Belt.csh(ap, {0: 'dog', 1: 0, 2: 'cat', 19: 'frog'}
+    , gb, {'dog': 0, 'cat': 1, 'frog': 3})('a', 'b', 'c', 'd') === 'dogacat ');
+
+    test.ok(gb.dog === 'a');
+    test.ok(gb.cat === 'b');
+    test.ok(gb.frog === 'd');
+
+    test.ok(Belt.csh(ap, {0: 0, 1: 1, 2: 2}, null, null, function(a, b, c){
+      return {0: 'z', 1: b, 2: 'z'};
+    })('a', 'b', 'c', 'd') === 'zbz ');
+
+    test.ok(Belt.csh(ap, {0: 0, 1: 1, 2: 2}, null, null, [
+      function(a, b, c){ return {0: 'z', 1: b, 2: 'z'}; }
+    , function(a, b, c){ return {0: b, 1: a, 2: '9'}; }
+    ])('a', 'b', 'c', 'd') === 'bz9 ');
+
     return test.done();
   }
 };
