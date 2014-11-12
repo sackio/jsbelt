@@ -694,4 +694,49 @@ exports['unitTests'] = {
 
     return test.done();
   }
+, 'deepEqual-constants': function(test){
+    var test_name = 'deepEqual-constants';
+
+    test.ok(Belt.deepEqual(true, true));
+    test.ok(Belt.deepEqual(false, false));
+    test.ok(Belt.deepEqual(0, 0));
+    test.ok(Belt.deepEqual(null, null));
+    test.ok(Belt.deepEqual(undefined, undefined));
+    test.ok(Belt.deepEqual(Infinity, Infinity));
+    test.ok(Belt.deepEqual(-Infinity, -Infinity));
+
+    test.ok(!Belt.deepEqual(true, false));
+    test.ok(!Belt.deepEqual(false, true));
+    test.ok(!Belt.deepEqual(false, null));
+    test.ok(!Belt.deepEqual(0, null));
+    test.ok(!Belt.deepEqual(null, 'something'));
+    test.ok(!Belt.deepEqual(null, undefined));
+    test.ok(!Belt.deepEqual(-Infinity, Infinity));
+    test.ok(!Belt.deepEqual(Infinity, -Infinity));
+
+    return test.done();
+  }
+, 'deepPick': function(test){
+    var test_name = 'deepPick';
+
+    test.ok(Belt.deepEqual(Belt.deepPick({}, []), {}));
+    test.ok(Belt.deepEqual(Belt.deepPick(false, []), false), JSON.stringify(Belt.deepPick(false, [])));
+    test.ok(Belt.deepEqual(Belt.deepPick([], []), []), JSON.stringify(Belt.deepPick([], [])));
+    test.ok(Belt.deepEqual(Belt.deepPick({'a': 1, 'b': 2}, []), {}));
+    test.ok(Belt.deepEqual(Belt.deepPick({'a': 1, 'b': 2}, ['a']), {'a': 1}));
+
+    var obj = {'deep': {'copy': {'a': 1, 'b': 2}}};
+
+    test.ok(Belt.deepEqual(Belt.deepPick({'a': 1, 'b': 2}, ['notreal']), {}));
+    test.ok(Belt.deepEqual(Belt.deepPick({'a': 1, 'b': 2}, ['a', 'b', 'c']), {'a': 1, 'b': 2}));
+    test.ok(Belt.deepEqual(Belt.deepPick({'a': 1, 'b': 2}, ['a', 'b', {'c': function(){ return this.a + this.b; }}])
+    , {'a': 1, 'b': 2, 'c': 3}));
+
+    test.ok(Belt.deepEqual(Belt.deepPick(obj, ['deep.copy.a']), {'deep': {'copy': {'a': 1}}}));
+    test.ok(Belt.deepEqual(Belt.deepPick(obj, ['deep.copy.z']), {}));
+    test.ok(Belt.deepEqual(Belt.deepPick(obj, ['deep.copy', {'deep.ocean.p': function(){ return 'sea'; }}])
+    , {'deep': {'copy': {'a': 1, 'b': 2}, 'ocean': {'p': 'sea'}}}));
+
+    return test.done();
+  }
 };
