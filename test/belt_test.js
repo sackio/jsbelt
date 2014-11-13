@@ -674,6 +674,13 @@ exports['unitTests'] = {
     test.ok(gb.cat === 'b');
     test.ok(gb.frog === 'd');
 
+    test.ok(Belt.csh(ap, {0: 'dog', 1: 0, 2: 'cat', 19: 'frog'}
+    , gb, {'dog': function(a, b, c){ return a + b + c; }, 'cat': 1, 'frog': 3})('a', 'b', 'c', 'd') === 'dogacat ');
+
+    test.ok(gb.dog === 'abc');
+    test.ok(gb.cat === 'b');
+    test.ok(gb.frog === 'd');
+
     test.ok(Belt.csh(ap, {0: 0, 1: 1, 2: 2}, null, null, function(a, b, c){
       return {0: 'z', 1: b, 2: 'z'};
     })('a', 'b', 'c', 'd') === 'zbz ');
@@ -682,6 +689,14 @@ exports['unitTests'] = {
       function(a, b, c){ return {0: 'z', 1: b, 2: 'z'}; }
     , function(a, b, c){ return {0: b, 1: a, 2: '9'}; }
     ])('a', 'b', 'c', 'd') === 'bz9 ');
+
+    Belt.csh(ap, null, gb,  {'dog': function(a, b, c){ return a + b + c; }, 'cat': 1, 'frog': 3}, [
+      function(a, b, c){ return {'0': 'z', '1': 'z', '2': 'z'}; }
+    ])('a', 'b', 'c', 'd');
+
+    test.ok(gb.dog === 'zzz', gb.dog);
+    test.ok(gb.cat === 'z', gb.cat);
+    test.ok(!gb.frog);
 
     test.ok(Belt.csh(ap, {0: function(a){ return a === 'a' ? 'snap' : 'foo'; }, 1: 0, 2: 0})
     ('a', 'b', 'c', 'd') === 'snapaa ');
