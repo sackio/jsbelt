@@ -754,4 +754,27 @@ exports['unitTests'] = {
 
     return test.done();
   }
+, 'objMatch': function(test){
+    var test_name = 'objMatch';
+
+    var obj = {'dog': 'cat', 'puppy': 'kitty', 1: 2, 'array': [1, 2, 3]};
+
+    test.ok(Belt.objMatch(obj, {'dog': 'cat'}));
+    test.ok(!Belt.objMatch(obj, {'dog': 'not cat'}));
+    test.ok(!Belt.objMatch(obj, {'dog': 2}));
+    test.ok(!Belt.objMatch(obj, {'cat': 2}));
+
+    test.ok(Belt.objMatch(obj, {'dog': 'cat', 'puppy': 'kitty'}));
+    test.ok(!Belt.objMatch(obj, {'dog': 'cat', 'puppy': 'not kitty'}));
+    test.ok(!Belt.objMatch(obj, {'dog': 'cat', 'puppy': 2}));
+
+    test.ok(!Belt.objMatch(obj, null));
+    test.ok(!Belt.objMatch(null, {}));
+    test.ok(Belt.objMatch({}, {}));
+
+    test.ok(Belt.objMatch(obj, {'dog': 'cat', 'array': [1, 2, 3]}));
+    test.ok(!Belt.objMatch(obj, {'dog': 'cat', 'array': [1, 'a', 3]}));
+
+    return test.done();
+  }
 };
