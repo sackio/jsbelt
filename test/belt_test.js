@@ -777,4 +777,58 @@ exports['unitTests'] = {
 
     return test.done();
   }
+, 'deepMerge': function(test){
+    var test_name = 'deepMerge';
+
+    test.ok(Belt.deepEqual(Belt.deepMerge({'dog': 'puppy'}, {'cat': 'kitten'}), {'dog': 'puppy', 'cat': 'kitten'}));
+    test.ok(Belt.deepEqual(Belt.deepMerge({'dog': 'puppy'}, {'dog': 'kitten'}), {'dog': 'kitten'}));
+
+    var obj = Belt.deepMerge({'dog': 'puppy', 'lion': ['simba', 'mufasa']}, {'cat': 'kitten', 'lion': ['scar']});
+
+    test.ok(obj.dog === 'puppy');
+    test.ok(obj.cat === 'kitten');
+    test.ok(Belt.deepEqual(obj.lion, ['simba', 'mufasa', 'scar']));
+
+    obj = Belt.deepMerge({'dog': 'puppy', 'lion': {'names': 'simba'}}, {'cat': 'kitten', 'lion': {'frog': 'tadpole'}});
+    test.ok(obj.dog === 'puppy');
+    test.ok(obj.cat === 'kitten');
+    test.ok(obj.lion.names === 'simba');
+    test.ok(obj.lion.frog === 'tadpole');
+
+    obj = Belt.deepMerge({'dog': 'puppy', 'lion': {'names': ['simba']}}, {'cat': 'kitten', 'lion': {'names': ['mufasa'], 'frog': 'tadpole'}});
+    test.ok(Belt.deepEqual(obj.lion.names, ['simba', 'mufasa']));
+
+    obj = Belt.deepMerge(['dog', 'puppy'], ['cat', 'kitten', 'lion', {'frog': 'tadpole'}]);
+    test.ok(Belt.deepEqual(obj, ['dog', 'puppy', 'cat', 'kitten', 'lion', {frog: 'tadpole' }]));
+
+    obj = Belt.deepMerge({'dog': 'puppy'}, ['cat', 'kitten', 'lion', {'frog': 'tadpole'}]);
+    test.ok(Belt.deepEqual(obj, {'0': 'cat', '1': 'kitten',  '2': 'lion',  '3': { frog: 'tadpole' },  dog: 'puppy' }));
+
+    obj = Belt.deepMerge(['dog', 'puppy'], {'cat': 'kitten', 'lion': {'frog': 'tadpole'}});
+    test.ok(obj[0] === 'dog');
+    test.ok(obj[1] === 'puppy');
+    test.ok(obj['cat'] === 'kitten');
+    test.ok(Belt.deepEqual(obj['lion'], {'frog': 'tadpole'}));
+
+
+    obj = Belt.deepMerge(['dog', 'puppy'], false);
+    test.ok(Belt.deepEqual(obj, ['dog', 'puppy']));
+
+    obj = Belt.deepMerge(['dog', 'puppy'], undefined);
+    test.ok(Belt.deepEqual(obj, ['dog', 'puppy']));
+
+    obj = Belt.deepMerge(['dog', 'puppy'], []);
+    test.ok(Belt.deepEqual(obj, ['dog', 'puppy']));
+
+    obj = Belt.deepMerge(['dog', 'puppy'], {});
+    test.ok(Belt.deepEqual(obj, ['dog', 'puppy']));
+
+    obj = Belt.deepMerge(false, ['dog', 'puppy']);
+    test.ok(Belt.deepEqual(obj, ['dog', 'puppy']));
+
+    obj = Belt.deepMerge({}, ['dog', 'puppy']);
+    test.ok(Belt.deepEqual(obj, {'0': 'dog', '1': 'puppy'}));
+
+    return test.done();
+  }
 };
