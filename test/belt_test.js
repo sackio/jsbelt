@@ -831,4 +831,77 @@ exports['unitTests'] = {
 
     return test.done();
   }
+, 'setDeepArray': function(test){
+    var test_name = 'setDeepArray';
+
+    var obj = 'locations.[].label.home';
+    obj = Belt.set({}, obj, 'hello');
+
+    test.ok(Belt.deepEqual(obj, {'locations': [{'label': {'home': 'hello'}}]}));
+
+    obj = 'locations.3.label.home';
+    obj = Belt.set({}, obj, 'hello');
+
+    test.ok(Belt.deepEqual(obj, {'locations': [undefined, undefined, undefined, {'label': {'home': 'hello'}}]}));
+
+    obj = 'locations.3.label.2.apple';
+    obj = Belt.set({}, obj, 'hello');
+
+    test.ok(Belt.deepEqual(obj, {'locations': [undefined, undefined, undefined, {'label': [undefined, undefined, {'apple': 'hello'}]}]}));
+
+    obj = 'locations.3.label.-2.apple';
+    obj = Belt.set({}, obj, 'hello');
+
+    test.ok(Belt.deepEqual(obj, {'locations': [undefined, undefined, undefined, {'label': {'-2': {'apple': 'hello'}}}]}));
+
+    return test.done();
+  }
+, 'isNumber': function(test){
+    test.ok(Belt.isNumber(60));
+    test.ok(Belt.isNumber(60.12));
+    test.ok(Belt.isNumber('60'));
+    test.ok(Belt.isNumber('60.12'));
+    test.ok(!Belt.isNumber('60b'), parseInt('60b', 10));
+    test.ok(!Belt.isNumber('a60.12'));
+    test.ok(Belt.isNumber('-60.12'));
+    test.ok(!Belt.isNumber('-60.12.'));
+
+    test.ok(Belt.isNumber(0));
+    test.ok(Belt.isNumber('0'));
+
+    test.ok(!Belt.isNumber(true));
+    test.ok(!Belt.isNumber(undefined));
+    test.ok(!Belt.isNumber(null));
+    test.ok(!Belt.isNumber(''));
+    test.ok(!Belt.isNumber('not num'));
+    test.ok(!Belt.isNumber());
+
+    return test.done();
+  }
+, 'isInt': function(test){
+    test.ok(Belt.isInt(60));
+    test.ok(!Belt.isInt(60.12));
+    test.ok(Belt.isInt('60'));
+    test.ok(!Belt.isInt('60.12'));
+    test.ok(!Belt.isInt('60b'), parseInt('60b', 10));
+    test.ok(!Belt.isInt('a60.12'));
+    test.ok(!Belt.isInt('-60.12'));
+    test.ok(!Belt.isInt('-60.12.'));
+    test.ok(!Belt.isInt('-0.60'));
+    test.ok(!Belt.isInt('0.60'));
+    test.ok(Belt.isInt('-6'));
+    test.ok(Belt.isInt(-6));
+
+    test.ok(Belt.isInt(0));
+    test.ok(Belt.isInt('0'));
+
+    test.ok(!Belt.isInt(true));
+    test.ok(!Belt.isInt(undefined));
+    test.ok(!Belt.isInt(null));
+    test.ok(!Belt.isInt(''));
+    test.ok(!Belt.isInt('not num'));
+    test.ok(!Belt.isInt());
+
+    return test.done();
+  }
 };
