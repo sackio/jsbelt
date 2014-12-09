@@ -1005,4 +1005,39 @@ exports['unitTests'] = {
 
     return test.done();
   }
+, 'deepSet-with-arrays': function(test){
+    var obj = {'test': {0: true, 1: 'a', 2: false}};
+
+    Belt.set(obj, 'test.0', false);
+
+    test.ok(Belt.isPlainObj(Belt.get(obj, 'test')));
+    test.ok(Belt.get(obj, 'test.0') === false);
+
+    Belt.set(obj, 'test.17', false);
+
+    test.ok(Belt.isPlainObj(Belt.get(obj, 'test')));
+    test.ok(Belt.get(obj, 'test.17') === false);
+
+    Belt.set(obj, 'test.17', [1, 2]);
+
+    test.ok(!Belt.isPlainObj(Belt.get(obj, 'test.17')));
+    test.ok(Belt.deepEqual(Belt.get(obj, 'test.17'), [1, 2]));
+
+    Belt.set(obj, 'test.17.0', 'dog');
+
+    test.ok(!Belt.isPlainObj(Belt.get(obj, 'test.17.0')));
+    test.ok(Belt.deepEqual(Belt.get(obj, 'test.17'), ['dog', 2]));
+
+    Belt.set(obj, 'test.17.1', []);
+
+    test.ok(!Belt.isPlainObj(Belt.get(obj, 'test.17.1')));
+    test.ok(Belt.deepEqual(Belt.get(obj, 'test.17'), ['dog', []]));
+
+    Belt.set(obj, 'test.17.1.17', 'cat');
+
+    test.ok(Array.isArray(Belt.get(obj, 'test.17.1')));
+    test.ok(Belt.get(obj, 'test.17.1.17') === 'cat');
+
+    return test.done();
+  }
 };
