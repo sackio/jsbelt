@@ -904,4 +904,105 @@ exports['unitTests'] = {
 
     return test.done();
   }
+, 'isNull': function(test){
+    test.ok(Belt.isNull(null));
+    test.ok(Belt.isNull(undefined));
+    test.ok(!Belt.isNull(''));
+    test.ok(!Belt.isNull(false));
+    test.ok(!Belt.isNull(0));
+    test.ok(!Belt.isNull(true));
+
+    return test.done();
+  }
+, 'isEmpty': function(test){
+    test.ok(!Belt.isEmpty(null));
+    test.ok(!Belt.isEmpty(undefined));
+    test.ok(!Belt.isEmpty(''));
+    test.ok(!Belt.isEmpty(false));
+    test.ok(!Belt.isEmpty(0));
+    test.ok(!Belt.isEmpty(true));
+    test.ok(Belt.isEmpty({}));
+    test.ok(Belt.isEmpty([]));
+    test.ok(!Belt.isEmpty([1, 2, 3]));
+    test.ok(!Belt.isEmpty({'foo': 'bar'}));
+
+    return test.done();
+  }
+, 'isBlank': function(test){
+    test.ok(!Belt.isBlank(null));
+    test.ok(!Belt.isBlank(undefined));
+    test.ok(Belt.isBlank(''));
+    test.ok(Belt.isBlank(false));
+    test.ok(Belt.isBlank(0));
+    test.ok(!Belt.isBlank(true));
+    test.ok(!Belt.isBlank('true'));
+    test.ok(!Belt.isBlank({}));
+    test.ok(!Belt.isBlank([]));
+    test.ok(!Belt.isBlank([1, 2, 3]));
+    test.ok(!Belt.isBlank({'foo': 'bar'}));
+
+    return test.done();
+  }
+, 'isPlainObj': function(test){
+    test.ok(!Belt.isPlainObj(null));
+    test.ok(!Belt.isPlainObj(undefined));
+    test.ok(!Belt.isPlainObj(''));
+    test.ok(!Belt.isPlainObj(false));
+    test.ok(!Belt.isPlainObj(0));
+    test.ok(!Belt.isPlainObj(true));
+    test.ok(Belt.isPlainObj({}));
+    test.ok(!Belt.isPlainObj([]));
+    test.ok(!Belt.isPlainObj([1, 2, 3]));
+    test.ok(Belt.isPlainObj({'foo': 'bar'}));
+    test.ok(!Belt.isPlainObj(Belt.noop));
+    test.ok(!Belt.isPlainObj(new Date()));
+    test.ok(!Belt.isPlainObj(/test/));
+
+    return test.done();
+  }
+, 'isObj': function(test){
+    test.ok(!Belt.isObj(null));
+    test.ok(!Belt.isObj(undefined));
+    test.ok(!Belt.isObj(''));
+    test.ok(!Belt.isObj(false));
+    test.ok(!Belt.isObj(0));
+    test.ok(!Belt.isObj(true));
+    test.ok(Belt.isObj({}));
+    test.ok(Belt.isObj([]));
+    test.ok(Belt.isObj([1, 2, 3]));
+    test.ok(Belt.isObj({'foo': 'bar'}));
+
+    return test.done();
+  }
+, 'test': function(test){
+    test.ok(true);
+
+    var obj = {'deep': [{'copy': 1}, 2]}
+      , fobj = Belt.objFlatten(obj);
+
+    test.ok(Object.keys(fobj).length === 4);
+
+    for (var k in fobj){
+      test.ok(Belt.deepEqual(fobj[k], Belt.get(obj, k)));
+    }
+
+    var date = new Date();
+
+    obj = {
+      'array': [1, 2, 3]
+    , 'object': {'deep': {'object': [1, {'deeper': 'object'}, true, date]}}
+    , 'function': Belt.noop
+    , 'regex': new RegExp()
+    , 'date': [date, date]
+    };
+    fobj = Belt.objFlatten(obj);
+
+    test.ok(Object.keys(fobj).length === 17);
+
+    for (k in fobj){
+      test.ok(Belt.deepEqual(fobj[k], Belt.get(obj, k)));
+    }
+
+    return test.done();
+  }
 };
