@@ -1040,4 +1040,18 @@ exports['unitTests'] = {
 
     return test.done();
   }
+, 'chain': function(test){
+    var obj = {'test': {0: true, 1: 'a', 2: {'a': true, 'b': true, 'c': false, 'd': function(a){
+      return [1, a, 2];
+    }}}};
+    test.ok(Belt.chain(obj, ['test'], ['2.a']) === true);
+    test.ok(Belt.chain(obj, ['test.2'], 'b') === true);
+    test.ok(Belt.chain(obj, ['test.2'], 'c') === false);
+    test.ok(Belt.chain(obj, ['test.3'], 'c') === undefined);
+    test.ok(Belt.chain(obj, ['test'], ['2.zzz']) === undefined);
+    test.ok(Belt.chain(obj, ['test'], ['2'], ['d', 123], '1') === 123);
+    test.ok(Belt.chain(obj, ['test'], ['2'], ['g', 123], '1') === undefined);
+
+    return test.done();
+  }
 };
