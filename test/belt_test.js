@@ -1052,6 +1052,11 @@ exports['unitTests'] = {
     test.ok(Belt.chain(obj, ['test'], ['2'], ['d', 123], '1') === 123);
     test.ok(Belt.chain(obj, ['test'], ['2'], ['g', 123], '1') === undefined);
 
+    obj = {'isGood': function(){ return 'good'; }};
+
+    test.ok(Belt.chain.apply(Belt, [obj, ['isGood']]) === 'good');
+    test.ok(Belt.chain.apply(Belt, [obj, ['isGood', undefined]]) === 'good');
+
     return test.done();
   }
 };
