@@ -1068,6 +1068,7 @@ exports['unitTests'] = {
     return test.done();
   }
 , 'more-deepEquals': function(test){
+    var d = new Date();
     var obj = {
       'cat': 1
     , 'dog': 2
