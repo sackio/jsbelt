@@ -974,7 +974,7 @@ exports['unitTests'] = {
 
     return test.done();
   }
-, 'test': function(test){
+, 'objFlatten': function(test){
     test.ok(true);
 
     var obj = {'deep': [{'copy': 1}, 2]}
@@ -1002,6 +1002,14 @@ exports['unitTests'] = {
     for (k in fobj){
       test.ok(Belt.deepEqual(fobj[k], Belt.get(obj, k)));
     }
+
+    fobj = Belt.objFlatten(obj, {'deepest': true});
+    for (k in fobj){
+      test.ok(Belt.deepEqual(fobj[k], Belt.get(obj, k)));
+    }
+
+    Belt.deepEqual(Object.keys(fobj), ['array.0', 'array.1', 'array.2', 'object.deep.object.0', 'object.deep.object.1.deeper'
+    , 'object.deep.object.2', 'object.deep.object.3', 'function', 'regex', 'date.0', 'date.1']);
 
     return test.done();
   }
