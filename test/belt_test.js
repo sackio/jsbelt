@@ -1067,4 +1067,20 @@ exports['unitTests'] = {
 
     return test.done();
   }
+, 'more-deepEquals': function(test){
+    var obj = {
+      'cat': 1
+    , 'dog': 2
+    , 'frog': true
+    };
+    var obj2 = {
+      'frog': true
+    , 'cat': 1
+    , 'dog': 2
+    };
+
+    test.ok(Belt.deepEqual(obj, obj2));
+
+    return test.done();
+  }
 };
