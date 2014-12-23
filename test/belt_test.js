@@ -1084,4 +1084,24 @@ exports['unitTests'] = {
 
     return test.done();
   }
+, 'delete': function(test){
+    var obj = {'test': {0: true, 1: 'a', 2: {'a': true, 'b': true, 'c': false, 'd': function(a){
+      return [1, a, 2];
+    }}}};
+
+    test.ok(Belt.get(obj, 'test.2.d'));
+    Belt.delete(obj, 'test.2.d');
+    test.ok(Belt.get(obj, 'test.2.d') === undefined);
+
+    Belt.delete(obj, 'test.0');
+    test.ok(Belt.get(obj, 'test.0') === undefined);
+    test.ok(Belt.get(obj, 'test'));
+
+    Belt.delete(obj, 'test');
+    test.ok(Belt.get(obj, 'test') === undefined);
+
+    Belt.delete(obj, 'nonexistent');
+
+    return test.done();
+  }
 };
