@@ -13,5 +13,6 @@
   "node": true,
   "evil": true,
   "laxcomma": true,
-  "laxbreak": true
+  "laxbreak": true,
+  "loopfunc": true
 }

@@ -1104,4 +1104,68 @@ exports['unitTests'] = {
 
     return test.done();
   }
+, 'difference': function(test){
+    var ar = [1, 2, 3, 4]
+      , _ar = [1, 2];
+
+    test.ok(Belt.deepEqual([3, 4], Belt.difference(ar, _ar)));
+
+    _ar = [1, 2, 3, 4];
+    test.ok(Belt.deepEqual([], Belt.difference(ar, _ar)));
+
+    _ar = [1, 2, 3, 4, 5, 6, 1];
+    test.ok(Belt.deepEqual([], Belt.difference(ar, _ar)));
+
+    ar = [1, 1, 2, 3, 1, 4];
+    _ar = [1, 2];
+    test.ok(Belt.deepEqual([1, 3, 1, 4], Belt.difference(ar, _ar)));
+
+    ar = 'dog';
+    _ar = [1, 2];
+    test.ok(Belt.deepEqual([], Belt.difference(ar, _ar)));
+
+    ar = ['dog'];
+    _ar = 4324234;
+    test.ok(Belt.deepEqual(['dog'], Belt.difference(ar, _ar)));
+
+    return test.done();
+  }
+, 'arrayDiff': function(test){
+    var ar = [1, 2, 3, 4]
+      , _ar = [1, 2]
+      , arb = [2, 1, 1, 4];
+
+    test.ok(Belt.deepEqual(Belt.arrayDiff(ar, _ar), {'$push': {}, '$pull': {'2': 3, '3': 4}, '$position': {}}));
+    test.ok(Belt.deepEqual(Belt.arrayDiff(_ar, ar), {'$push': {'2': 3, '3': 4}, '$pull': {}, '$position': {}}));
+    test.ok(Belt.deepEqual(Belt.arrayDiff(ar, arb), {'$push': {'2': 1}, '$pull': {'2': 3}, '$position': {'0': 1, '1': 0}}));
+    return test.done();
+  }
+, 'objDiff': function(test){
+    var obj = {
+      'cat': 1
+    , 'dog': 2
+    , 'pepperoni': [1, 2, 3]
+    , 'frog': true
+    };
+    var obj2 = {
+      'frog': false
+    , 'cat': 1
+    , 'dog': 2
+    };
+    var obj3 = {'frog': {'dog': 'cat'}, 'test': {0: true, 1: 'a', 2: {'a': true, 'b': true, 'c': false, 'd': function(a){
+      return [1, a, 2];
+    }}}};
+    var obj4 = {
+      'cat': 1
+    , 'dog': 2
+    , 'pepperoni': [{'joke': 'crab'}]
+    , 'frog': true
+    };
+
+    //console.log(Belt.objDiff(obj, obj4));
+
+    test.ok(true);
+
+    return test.done();
+  }
 };
