@@ -1152,9 +1152,7 @@ exports['unitTests'] = {
     , 'cat': 1
     , 'dog': 2
     };
-    var obj3 = {'frog': {'dog': 'cat'}, 'test': {0: true, 1: 'a', 2: {'a': true, 'b': true, 'c': false, 'd': function(a){
-      return [1, a, 2];
-    }}}};
+    var obj3 = {'frog': {'dog': 'cat'}, 'test': {0: true, 1: 'a', 2: {'a': true, 'b': true, 'c': false}}};
     var obj4 = {
       'cat': 1
     , 'dog': 2
@@ -1162,9 +1160,292 @@ exports['unitTests'] = {
     , 'frog': true
     };
 
-    //console.log(Belt.objDiff(obj, obj4));
+    test.ok(Belt.equal(Belt.objDiff(obj, obj), {'$unset': [], '$set': {}, '$type': {'': 'object'}}));
+    test.ok(Belt.equal(Belt.objDiff(obj2, obj2), {'$unset': [], '$set': {}, '$type': {'': 'object'}}));
+    test.ok(Belt.equal(Belt.objDiff(obj3, obj3), {'$unset': [], '$set': {}, '$type': {'': 'object'}}));
+    test.ok(Belt.equal(Belt.objDiff(obj4, obj4), {'$unset': [], '$set': {}, '$type': {'': 'object'}}));
 
-    test.ok(true);
+    test.ok(Belt.equal({'$unset': ['test'], '$set': {'cat': 1, 'dog': 2, 'pepperoni.0': 1
+    , 'pepperoni.1': 2, 'pepperoni.2': 3, 'frog': true}, '$type': {'': 'object', 'pepperoni': 'array'}}
+    , Belt.objDiff(obj3, obj)));
+
+    test.ok(Belt.equal({'$unset': ['cat', 'dog', 'pepperoni' ]
+    , '$set': {'frog.dog': 'cat', 'test.0': true, 'test.1': 'a', 'test.2.a': true
+      , 'test.2.b': true, 'test.2.c': false}
+    , '$type': {frog: 'object', test: 'object', 'test.2': 'object', '': 'object'}}, Belt.objDiff(obj, obj3)));
+
+
+    test.ok(Belt.equal({'$unset': ['pepperoni'], '$set': {frog: false }, '$type': {'': 'object'}}, Belt.objDiff(obj4, obj2)));
+
+    test.ok(Belt.equal({'$type': {'pepperoni.0': 'object', '': 'object'}, '$unset': ['pepperoni.1', 'pepperoni.2']
+    , '$set': { 'pepperoni.0.joke': 'crab' }}, Belt.objDiff(obj, obj4)));
+
+    test.ok(Belt.equal({'$unset': [], '$set': {'pepperoni.0.joke': 'crab', 'frog': true }
+    , '$type': {'': 'object', 'pepperoni': 'array', 'pepperoni.0': 'object' }}, Belt.objDiff(obj2, obj4)));
+
+    obj = [1, 2, 3];
+    obj2 = [1, true, 4, 3];
+
+    test.ok(Belt.equal({'$unset': [], '$set': {'1': true, '2': 4, '3': 3}, '$type': {'': 'array'}}, Belt.objDiff(obj, obj2)));
+
+    obj = 234;
+    obj2 = [1, true, 4, 3];
+    test.ok(Belt.equal({'$unset': [], '$set': {'0': 1, '1': true, '2': 4, '3': 3}, '$type': {'': 'array'}}, Belt.objDiff(obj, obj2)));
+
+
+    obj2 = 234;
+    obj = [1, true, 4, 3];
+
+    test.ok(Belt.equal({'$unset': ['0', '1', '2', '3' ], '$set': {'': 234}, '$type': {'': 'number'}}, Belt.objDiff(obj, obj2)));
+
+    obj2 = [1, [1], 0, 2];
+    obj = [1, [], 4];
+    test.ok(Belt.equal(Belt.objDiff(obj2, obj), {'$type': {'': 'array'}, '$unset': ['3'], '$set': {'1': [], '2': 4 }}));
+
+    obj2 = {1: {}, 0: 2};
+    obj = {1: 2};
+    test.ok(Belt.equal(Belt.objDiff(obj, obj2), {'$type': {'1': 'object', '':'object'}
+    , '$unset': [], '$set': {'0': 2, '1': {}}}));
+
+    obj2 = {1: {2: []}, 0: 2};
+    obj = {1: 2};
+
+    test.ok(Belt.equal(Belt.objDiff(obj, obj2), {'$type': {'1': 'object', '': 'object', '1.2': 'array'}
+    , '$unset': [], '$set': {'0': 2, '1.2': []}}));
+    test.ok(Belt.equal(Belt.objDiff(obj2, obj), {'$type': {'': 'object'}, '$unset': ['0']
+    , '$set': {'1': 2}}));
+
+    return test.done();
+  }
+, 'objToArray': function(test){
+    var obj = {0: 0, 2: 2, 1: 1};
+    test.ok(Belt.equal(Belt.objToArray(obj), [0, 1, 2]));
+
+    obj = {0: 0, 2: 2, 1: 1, 6: 6};
+    test.ok(Belt.equal(Belt.objToArray(obj), [0, 1, 2, , , , 6]));
+
+    return test.done();
+  }
+, 'pathStat': function(test){
+    var obj = {'pepperoni': [{'joke': 'crab'}, 1, true, [0, 1]], 'frog': {'dog': 'cat'}, 'test': {0: true, 1: 'a', 2: {'a': true, 'b': true, 'c': false}}};
+
+    var ps = Belt.pathStat(obj, 'pepperoni');
+
+    test.ok(ps.type === 'array');
+    test.ok(Belt.deepEqual(ps.val, Belt.get(obj, 'pepperoni')));
+    test.ok(Belt.deepEqual(ps.parent, obj));
+    test.ok(ps.ptype === 'object');
+    test.ok(ps.ppath === '');
+    test.ok(ps.lpath === 'pepperoni');
+    test.ok(ps.is_el === false);
+
+    ps = Belt.pathStat(obj, 'pepperoni.0.joke');
+
+    test.ok(ps.type === 'string');
+    test.ok(Belt.deepEqual(ps.val, Belt.get(obj, 'pepperoni.0.joke')));
+    test.ok(Belt.deepEqual(ps.parent, Belt.get(obj, ps.ppath)));
+    test.ok(ps.ptype === 'object');
+    test.ok(ps.ppath === 'pepperoni.0');
+    test.ok(ps.lpath === 'joke');
+    test.ok(ps.is_el === false);
+
+    ps = Belt.pathStat(obj, 'pepperoni.3.1');
+
+    test.ok(ps.type === 'number');
+    test.ok(Belt.deepEqual(ps.val, Belt.get(obj, 'pepperoni.3.1')));
+    test.ok(Belt.deepEqual(ps.parent, Belt.get(obj, ps.ppath)));
+    test.ok(ps.ptype === 'array');
+    test.ok(ps.ppath === 'pepperoni.3');
+    test.ok(ps.lpath === '1');
+    test.ok(ps.is_el === true);
+
+    ps = Belt.pathStat(obj, '');
+
+    test.ok(ps.type === 'object');
+    test.ok(Belt.deepEqual(ps.val, Belt.get(obj, '')));
+    test.ok(Belt.deepEqual(ps.parent, undefined));
+    test.ok(!ps.ptype);
+    test.ok(!ps.ppath);
+    test.ok(ps.lpath === '');
+    test.ok(!ps.is_el);
+
+    ps = Belt.pathStat(obj, 'not even a path');
+
+    test.ok(!ps.type);
+    test.ok(!ps.val);
+    test.ok(!ps.parent);
+    test.ok(!ps.ptype);
+    test.ok(!ps.ppath);
+    test.ok(!ps.lpath);
+    test.ok(!ps.is_el);
+
+    return test.done();
+  }
+, 'typeof': function(test){
+    test.ok(Belt.typeof([]) === 'array');
+    test.ok(Belt.typeof({}) === 'object');
+    test.ok(Belt.typeof(Belt.np) === 'function');
+    test.ok(Belt.typeof(12323) === 'number');
+    test.ok(Belt.typeof(12.323) === 'number');
+    test.ok(Belt.typeof('12323') === 'string');
+    test.ok(Belt.typeof('') === 'string');
+    test.ok(Belt.typeof(true) === 'boolean');
+    test.ok(Belt.typeof(false) === 'boolean');
+    test.ok(Belt.typeof(new Date()) === 'date');
+    test.ok(Belt.typeof(/sdasdf/) === 'regexp');
+    test.ok(Belt.typeof(undefined) === 'undefined');
+    test.ok(Belt.typeof(null) === 'null');
+
+    return test.done();
+  }
+, 'objPatch': function(test){
+    var obj = {
+      'cat': 1
+    , 'dog': 2
+    , 'pepperoni': [1, 2, 3]
+    , 'frog': true
+    };
+    var obj2 = {
+      'frog': false
+    , 'cat': 1
+    , 'dog': 2
+    };
+    var obj3 = {'frog': {'dog': 'cat'}, 'test': {0: true, 1: 'a', 2: {'a': true, 'b': true, 'c': false}}};
+    var obj4 = {
+      'cat': 1
+    , 'dog': 2
+    , 'pepperoni': [{'joke': 'crab'}]
+    , 'frog': true
+    };
+
+    var ptch = Belt.objDiff(obj, obj2);
+    test.ok(Belt.deepEqual(obj2, Belt.objPatch(obj, ptch)));
+
+    ptch = Belt.objDiff(obj, obj3);
+    test.ok(Belt.deepEqual(obj3, Belt.objPatch(obj, ptch)));
+
+    ptch = Belt.objDiff(obj, obj4);
+    test.ok(Belt.deepEqual(obj4, Belt.objPatch(obj, ptch)));
+
+    ptch = Belt.objDiff(obj, obj);
+    test.ok(Belt.deepEqual(obj, Belt.objPatch(obj, ptch)));
+
+    ptch = Belt.objDiff(obj2, obj2);
+    test.ok(Belt.deepEqual(obj2, Belt.objPatch(obj2, ptch)));
+
+    ptch = Belt.objDiff(obj2, obj3);
+    test.ok(Belt.deepEqual(obj3, Belt.objPatch(obj2, ptch)));
+
+    ptch = Belt.objDiff(obj2, obj4);
+    test.ok(Belt.deepEqual(obj4, Belt.objPatch(obj2, ptch)));
+
+    ptch = Belt.objDiff(obj2, obj);
+    test.ok(Belt.deepEqual(obj, Belt.objPatch(obj2, ptch)));
+
+    ptch = Belt.objDiff(obj3, obj2);
+    test.ok(Belt.deepEqual(obj2, Belt.objPatch(obj3, ptch)));
+
+    ptch = Belt.objDiff(obj3, obj3);
+    test.ok(Belt.deepEqual(obj3, Belt.objPatch(obj3, ptch)));
+
+    ptch = Belt.objDiff(obj3, obj4);
+    test.ok(Belt.deepEqual(obj4, Belt.objPatch(obj3, ptch)));
+
+    ptch = Belt.objDiff(obj3, obj);
+    test.ok(Belt.deepEqual(obj, Belt.objPatch(obj3, ptch)));
+
+    ptch = Belt.objDiff(obj4, obj2);
+    test.ok(Belt.deepEqual(obj2, Belt.objPatch(obj4, ptch)));
+
+    ptch = Belt.objDiff(obj4, obj3);
+    test.ok(Belt.deepEqual(obj3, Belt.objPatch(obj4, ptch)));
+
+    ptch = Belt.objDiff(obj4, obj4);
+    test.ok(Belt.deepEqual(obj4, Belt.objPatch(obj4, ptch)));
+
+    ptch = Belt.objDiff(obj4, obj);
+    test.ok(Belt.deepEqual(obj, Belt.objPatch(obj4, ptch)));
+
+    obj = [1, 2, 3];
+    obj2 = [1, true, 4, 3];
+
+    ptch = Belt.objDiff(obj, obj2);
+    test.ok(Belt.deepEqual(obj2, Belt.objPatch(obj, ptch)));
+
+    ptch = Belt.objDiff(obj2, obj);
+    test.ok(Belt.deepEqual(obj, Belt.objPatch(obj2, ptch)));
+
+    obj = 234;
+    obj2 = [1, true, 4, 3];
+
+    ptch = Belt.objDiff(obj, obj2);
+    test.ok(Belt.deepEqual(obj2, Belt.objPatch(obj, ptch)));
+
+    ptch = Belt.objDiff(obj2, obj);
+    test.ok(Belt.deepEqual(obj, Belt.objPatch(obj2, ptch)));
+
+    obj2 = 234;
+    obj = [1, true, 4, 3];
+
+    ptch = Belt.objDiff(obj, obj2);
+    test.ok(Belt.deepEqual(obj2, Belt.objPatch(obj, ptch)));
+
+    ptch = Belt.objDiff(obj2, obj);
+    test.ok(Belt.deepEqual(obj, Belt.objPatch(obj2, ptch)));
+
+    obj2 = [1, [1], 0, 2];
+    obj = [1, [], 4];
+
+    ptch = Belt.objDiff(obj, obj2);
+    test.ok(Belt.deepEqual(obj2, Belt.objPatch(obj, ptch)));
+
+    ptch = Belt.objDiff(obj2, obj);
+    test.ok(Belt.deepEqual(obj, Belt.objPatch(obj2, ptch)));
+
+    obj2 = {1: {}, 0: 2};
+    obj = {1: 2};
+
+    ptch = Belt.objDiff(obj, obj2);
+    test.ok(Belt.deepEqual(obj2, Belt.objPatch(obj, ptch)));
+
+    ptch = Belt.objDiff(obj2, obj);
+    test.ok(Belt.deepEqual(obj, Belt.objPatch(obj2, ptch)));
+
+    obj2 = {1: {2: []}, 0: 2};
+    obj = {1: 2};
+
+    ptch = Belt.objDiff(obj, obj2);
+    test.ok(Belt.deepEqual(obj2, Belt.objPatch(obj, ptch)));
+
+    ptch = Belt.objDiff(obj2, obj);
+    test.ok(Belt.deepEqual(obj, Belt.objPatch(obj2, ptch)));
+
+    obj2 = [2];
+    obj = {1: 2};
+
+    ptch = Belt.objDiff(obj, obj2);
+    test.ok(Belt.deepEqual(obj2, Belt.objPatch(obj, ptch)));
+
+    ptch = Belt.objDiff(obj2, obj);
+    test.ok(Belt.deepEqual(obj, Belt.objPatch(obj2, ptch)));
+
+    obj2 = [3];
+    obj = {0: 0, 1: 1};
+
+    ptch = Belt.objDiff(obj, obj2);
+    test.ok(Belt.deepEqual(obj2, Belt.objPatch(obj, ptch)));
+
+    ptch = Belt.objDiff(obj2, obj);
+    test.ok(Belt.deepEqual(obj, Belt.objPatch(obj2, ptch)));
+
+    obj2 = 3;
+    obj = 'string';
+
+    ptch = Belt.objDiff(obj, obj2);
+    test.ok(Belt.deepEqual(obj2, Belt.objPatch(obj, ptch)));
+
+    ptch = Belt.objDiff(obj2, obj);
+    test.ok(Belt.deepEqual(obj, Belt.objPatch(obj2, ptch)));
 
     return test.done();
   }
