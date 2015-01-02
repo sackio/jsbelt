@@ -929,15 +929,15 @@ exports['unitTests'] = {
     return test.done();
   }
 , 'isBlank': function(test){
-    test.ok(!Belt.isBlank(null));
-    test.ok(!Belt.isBlank(undefined));
+    test.ok(Belt.isBlank(null));
+    test.ok(Belt.isBlank(undefined));
     test.ok(Belt.isBlank(''));
-    test.ok(Belt.isBlank(false));
-    test.ok(Belt.isBlank(0));
+    test.ok(!Belt.isBlank(false));
+    test.ok(!Belt.isBlank(0));
     test.ok(!Belt.isBlank(true));
     test.ok(!Belt.isBlank('true'));
-    test.ok(!Belt.isBlank({}));
-    test.ok(!Belt.isBlank([]));
+    test.ok(Belt.isBlank({}));
+    test.ok(Belt.isBlank([]));
     test.ok(!Belt.isBlank([1, 2, 3]));
     test.ok(!Belt.isBlank({'foo': 'bar'}));
 
@@ -1008,8 +1008,11 @@ exports['unitTests'] = {
       test.ok(Belt.deepEqual(fobj[k], Belt.get(obj, k)));
     }
 
-    Belt.deepEqual(Object.keys(fobj), ['array.0', 'array.1', 'array.2', 'object.deep.object.0', 'object.deep.object.1.deeper'
-    , 'object.deep.object.2', 'object.deep.object.3', 'function', 'regex', 'date.0', 'date.1']);
+    test.ok(Belt.deepEqual(Object.keys(fobj), ['array.0', 'array.1', 'array.2', 'object.deep.object.0', 'object.deep.object.1.deeper'
+    , 'object.deep.object.2', 'object.deep.object.3', 'function', 'regex', 'date.0', 'date.1']));
+
+    fobj = Belt.objFlatten(obj, {'stop_on_arrays': true});
+    test.ok(Belt.deepEqual(Object.keys(fobj), ['array', 'object', 'object.deep', 'object.deep.object', 'function', 'regex', 'date']));
 
     return test.done();
   }
@@ -1446,6 +1449,226 @@ exports['unitTests'] = {
 
     ptch = Belt.objDiff(obj2, obj);
     test.ok(Belt.deepEqual(obj, Belt.objPatch(obj2, ptch)));
+
+    return test.done();
+  }
+, 'cast': function(test){
+    var s = 'string'
+      , n = 1234
+      , b = true
+      , d = new Date()
+      , r = /regexp/
+      , o = {'object': true}
+      , a = [true]
+      , f = Belt.noop
+      , u, nl = null;
+
+    test.ok(Belt.deepEqual(Belt.cast(s, 'object'), {'string': 'string'}));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'array'), ['string']));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'string'), s));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'number'), NaN));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'boolean'), true));
+    test.ok(Belt.typeof(Belt.cast(s, 'date')) === 'date');
+    test.ok(Belt.deepEqual(Belt.cast(s, 'regexp'), /string/));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'function'), Belt.np));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'undefined'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'null'), null));
+
+    s = '';
+
+    test.ok(Belt.deepEqual(Belt.cast(s, 'object'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'array'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'string'), s));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'number'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'boolean'), false));
+    test.ok(Belt.typeof(Belt.cast(s, 'date')) === 'undefined');
+    test.ok(Belt.deepEqual(Belt.cast(s, 'regexp'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'function'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'undefined'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'null'), null));
+
+    s = n;
+
+    test.ok(Belt.deepEqual(Belt.cast(s, 'object'), {'1234': 1234}));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'array'), [1234]));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'string'), '1234'));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'number'), s));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'boolean'), true));
+    test.ok(Belt.typeof(Belt.cast(s, 'date')) === 'date');
+    test.ok(Belt.deepEqual(Belt.cast(s, 'regexp'), /1234/));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'function'), Belt.np));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'undefined'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'null'), null));
+
+    s = 0;
+
+    test.ok(Belt.deepEqual(Belt.cast(s, 'object'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'array'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'string'), '0'));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'number'), 0));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'boolean'), false));
+    test.ok(Belt.typeof(Belt.cast(s, 'date')) === 'date');
+    test.ok(Belt.deepEqual(Belt.cast(s, 'regexp'), /0/));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'function'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'undefined'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'null'), null));
+
+    s = b;
+
+    test.ok(Belt.deepEqual(Belt.cast(s, 'object'), {'true': true}));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'array'), [true]));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'string'), 'true'));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'number'), 1));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'boolean'), s));
+    test.ok(Belt.typeof(Belt.cast(s, 'date')) === 'date');
+    test.ok(Belt.deepEqual(Belt.cast(s, 'regexp'), /true/));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'function'), Belt.np));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'undefined'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'null'), null));
+
+    s = false;
+
+    test.ok(Belt.deepEqual(Belt.cast(s, 'object'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'array'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'string'), 'false'));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'number'), 0));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'boolean'), false));
+    test.ok(Belt.typeof(Belt.cast(s, 'date')) === 'date');
+    test.ok(Belt.deepEqual(Belt.cast(s, 'regexp'), /false/));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'function'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'undefined'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'null'), null));
+
+    s = d;
+
+    test.ok(Belt.deepEqual(Belt.cast(s, 'object'), Belt.deepObj([s.toString()], [s])));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'array'), [s]));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'string'), s.toString()));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'number'), s.valueOf()));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'boolean'), true));
+    test.ok(Belt.typeof(Belt.cast(s, 'date')) === 'date');
+    test.ok(Belt.deepEqual(Belt.cast(s, 'date'), s));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'regexp'), new RegExp(s.toString())));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'function'), Belt.np));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'undefined'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'null'), null));
+
+    s = r;
+
+    test.ok(Belt.deepEqual(Belt.cast(s, 'object'), Belt.deepObj([s.toString()], [s])));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'array'), [s]));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'string'), s.toString()));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'number'), NaN));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'boolean'), true));
+    test.ok(Belt.typeof(Belt.cast(s, 'date')) === 'date');
+    test.ok(Belt.deepEqual(Belt.cast(s, 'regexp'), s));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'function'), Belt.np));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'undefined'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'null'), null));
+
+    s = o;
+
+    test.ok(Belt.deepEqual(Belt.cast(s, 'object'), s));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'array'), [true]));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'string'), Belt.stringify(s)));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'number'), NaN));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'boolean'), true));
+    test.ok(Belt.typeof(Belt.cast(s, 'date')) === 'date');
+    test.ok(Belt.deepEqual(Belt.cast(s, 'regexp'), new RegExp(s)));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'function'), Belt.np));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'undefined'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'null'), null));
+
+    s = {0: 1, 'a': 2};
+
+    test.ok(Belt.deepEqual(Belt.cast(s, 'object'), s));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'array'), [1]));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'string'), Belt.stringify(s)));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'number'), NaN));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'boolean'), true));
+    test.ok(Belt.typeof(Belt.cast(s, 'date')) === 'date');
+    test.ok(Belt.deepEqual(Belt.cast(s, 'regexp'), new RegExp(s)));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'function'), Belt.np));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'undefined'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'null'), null));
+
+    s = {};
+
+    test.ok(Belt.deepEqual(Belt.cast(s, 'object'), s));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'array'), []));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'string'), ''));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'number'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'boolean'), false));
+    test.ok(Belt.typeof(Belt.cast(s, 'date')) === 'undefined');
+    test.ok(Belt.deepEqual(Belt.cast(s, 'regexp'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'function'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'undefined'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'null'), null));
+
+    s = a;
+
+    test.ok(Belt.deepEqual(Belt.cast(s, 'object'), {'0': true}));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'array'), s));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'string'), Belt.stringify(s)));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'number'), NaN));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'boolean'), true));
+    test.ok(Belt.typeof(Belt.cast(s, 'date')) === 'date');
+    test.ok(Belt.deepEqual(Belt.cast(s, 'regexp'), new RegExp(s)));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'function'), Belt.np));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'undefined'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'null'), null));
+
+    s = [];
+
+    test.ok(Belt.deepEqual(Belt.cast(s, 'object'), {}));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'array'), s));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'string'), ''));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'number'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'boolean'), false));
+    test.ok(Belt.typeof(Belt.cast(s, 'date')) === 'undefined');
+    test.ok(Belt.deepEqual(Belt.cast(s, 'regexp'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'function'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'undefined'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'null'), null));
+
+    s = f;
+
+    test.ok(Belt.deepEqual(Belt.cast(s, 'object'), Belt.deepObj([s.toString()], [s])));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'array'), [s]));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'string'), Belt.stringify(s)));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'number'), NaN));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'boolean'), true));
+    test.ok(Belt.typeof(Belt.cast(s, 'date')) === 'date');
+    test.ok(Belt.deepEqual(Belt.cast(s, 'regexp'), new RegExp(s)));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'function'), Belt.np));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'undefined'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'null'), null));
+
+    s = u;
+
+    test.ok(Belt.deepEqual(Belt.cast(s, 'object'), {}));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'array'), []));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'string'), ''));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'number'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'boolean'), false));
+    test.ok(Belt.typeof(Belt.cast(s, 'date')) === 'undefined');
+    test.ok(Belt.deepEqual(Belt.cast(s, 'regexp'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'function'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'undefined'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'null'), null));
+
+    s = nl;
+
+    test.ok(Belt.deepEqual(Belt.cast(s, 'object'), {}));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'array'), []));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'string'), ''));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'number'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'boolean'), false));
+    test.ok(Belt.typeof(Belt.cast(s, 'date')) === 'undefined');
+    test.ok(Belt.deepEqual(Belt.cast(s, 'regexp'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'function'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'undefined'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'null'), null));
 
     return test.done();
   }
