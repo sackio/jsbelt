@@ -1089,6 +1089,67 @@ exports['unitTests'] = {
 
     test.ok(!Belt.equal(obj, obj2));
 
+    obj = {
+      'cat': {
+        'mcdonalds': {
+          'bigmac': [1, 2, 3]
+        }
+      }
+    , 'frog': 'ok'
+    , 'dog': [1, [2], 3]
+    , 'apple': true
+    , 'bottle': undefined
+    };
+
+    obj2 = {
+      'cat': {
+        'mcdonalds': {
+          'bigmac': [1, 2, 3]
+        }
+      }
+    , 'frog': 'ok'
+    , 'dog': [1, [2], 3]
+    , 'apple': true
+    };
+
+    test.ok(!Belt.equal(obj, obj2));
+
+    return test.done();
+  }
+, 'has': function(test){
+    var d = new Date();
+    var obj = {
+      'cat': 1
+    , 'dog': 2
+    , 'frog': true
+    , 'frog2': ''
+    , 'h': undefined
+    };
+
+    test.ok(Belt.has(obj, 'frog'));
+    test.ok(Belt.has(obj, 'frog2'));
+    test.ok(!Belt.has(obj, 'frog.0'));
+    test.ok(!Belt.has(obj, 'not real'));
+    test.ok(Belt.has(obj, 'h'));
+
+    obj = {
+      'cat': {
+        'mcdonalds': {
+          'bigmac': [1, 2, 3]
+        , 'fries': undefined
+        }
+      }
+    , 'frog': 'ok'
+    , 'dog': [1, [2], 3]
+    , 'apple': true
+    , 'bottle': undefined
+    };
+
+    test.ok(Belt.has(obj, 'cat.mcdonalds.fries'));
+    test.ok(!Belt.has(obj, 'cat.mcdonalds.whopper'));
+    test.ok(Belt.has(obj, 'dog.1.0'));
+    test.ok(!Belt.has(obj, 'dog.1.1.12.12'));
+
     return test.done();
   }
 , 'delete': function(test){
@@ -1245,6 +1306,8 @@ exports['unitTests'] = {
     test.ok(ps.ppath === '');
     test.ok(ps.lpath === 'pepperoni');
     test.ok(ps.is_el === false);
+    test.ok(Belt.equal(ps.comp, ['', 'pepperoni']));
+    test.ok(ps.has);
 
     ps = Belt.pathStat(obj, 'pepperoni.0.joke');
 
@@ -1255,6 +1318,8 @@ exports['unitTests'] = {
     test.ok(ps.ppath === 'pepperoni.0');
     test.ok(ps.lpath === 'joke');
     test.ok(ps.is_el === false);
+    test.ok(Belt.equal(ps.comp, ['', 'pepperoni', 'pepperoni.0', 'pepperoni.0.joke']));
+    test.ok(ps.has);
 
     ps = Belt.pathStat(obj, 'pepperoni.3.1');
 
@@ -1265,6 +1330,8 @@ exports['unitTests'] = {
     test.ok(ps.ppath === 'pepperoni.3');
     test.ok(ps.lpath === '1');
     test.ok(ps.is_el === true);
+    test.ok(Belt.equal(ps.comp, ['', 'pepperoni', 'pepperoni.3', 'pepperoni.3.1']));
+    test.ok(ps.has);
 
     ps = Belt.pathStat(obj, '');
 
@@ -1275,16 +1342,32 @@ exports['unitTests'] = {
     test.ok(!ps.ppath);
     test.ok(ps.lpath === '');
     test.ok(!ps.is_el);
+    test.ok(Belt.equal(ps.comp, ['']));
+    test.ok(!ps.has);
 
     ps = Belt.pathStat(obj, 'not even a path');
 
-    test.ok(!ps.type);
+    test.ok(ps.type === 'undefined');
+    test.ok(!ps.val);
+    test.ok(ps.parent);
+    test.ok(ps.ptype === 'object');
+    test.ok(ps.ppath === '');
+    test.ok(ps.lpath === 'not even a path');
+    test.ok(Belt.equal(ps.comp, ['', 'not even a path']));
+    test.ok(!ps.is_el);
+    test.ok(!ps.has);
+
+    ps = Belt.pathStat(obj, 'pepperoni.about.dog');
+
+    test.ok(ps.type === 'undefined');
     test.ok(!ps.val);
     test.ok(!ps.parent);
-    test.ok(!ps.ptype);
-    test.ok(!ps.ppath);
-    test.ok(!ps.lpath);
+    test.ok(ps.ptype === 'undefined');
+    test.ok(ps.ppath === 'pepperoni.about');
+    test.ok(ps.lpath === 'dog');
     test.ok(!ps.is_el);
+    test.ok(Belt.equal(ps.comp, ['', 'pepperoni', 'pepperoni.about', 'pepperoni.about.dog']));
+    test.ok(!ps.has);
 
     return test.done();
   }
@@ -1684,13 +1767,15 @@ exports['unitTests'] = {
     return test.done();
   }
 , 'objSchema': function(test){
-    var schema = {
+    var obj, schema;
+
+    schema = {
       'cat': 'string'
     , 'dog': 'number'
     , 'frog': 'boolean'
     };
 
-    var obj = {
+    obj = {
       'cat': 123
     , 'frog': 'ok'
     , 'dog': [1, [2], 3]
@@ -1826,6 +1911,129 @@ exports['unitTests'] = {
         'bigmac': {0: 1, 1: 2, 2: 3}
       }
     }, frog: true, dog: [1, [2], 3]}));
+
+    obj = {
+      'cat': {
+        'mcdonalds': {
+          'bigmac': [1, 2, 3]
+        }
+      }
+    , 'frog': 'ok'
+    , 'dog': [1, [2], 3]
+    , 'apple': true
+    , 'bottle': undefined
+    };
+
+    schema = {
+      'cat.mcdonalds.bigmac': 'object'
+    , 'dog': 'array'
+    , 'frog': 'boolean'
+    };
+
+    test.ok(Belt.equal(Belt.objSchema(obj, schema), {cat: {
+      'mcdonalds': {
+        'bigmac': {0: 1, 1: 2, 2: 3}
+      }
+    }, frog: true, dog: [1, [2], 3]}));
+
+
+    obj = {
+      'cat': {
+        'mcdonalds': {
+          'bigmac': [1, 2, 3]
+        }
+      }
+    , 'frog': 'ok'
+    , 'dog': [1, [2], 3]
+    , 'apple': true
+    , 'bottle': undefined
+    };
+
+    schema = {
+      '': 'number'
+    };
+
+    test.ok(Belt.equal(Belt.objSchema(obj, schema), NaN));
+
+    obj = {
+      'cat': {
+        'mcdonalds': {
+          'bigmac': [1, 2, 3]
+        }
+      }
+    , 'frog': 'ok'
+    , 'dog': [1, [2], 3]
+    , 'apple': true
+    , 'bottle': undefined
+    };
+
+    schema = {
+      '': 'string'
+    };
+
+    test.ok(Belt.equal(Belt.objSchema(obj, schema), Belt.stringify({
+      'cat': {
+        'mcdonalds': {
+          'bigmac': [1, 2, 3]
+        }
+      }
+    , 'frog': 'ok'
+    , 'dog': [1, [2], 3]
+    , 'apple': true
+    , 'bottle': undefined
+    })));
+
+    obj = {
+      'cat': {
+        'mcdonalds': {
+          'bigmac': [1, 2, 3]
+        }
+      }
+    , 'frog': 'ok'
+    , 'dog': [1, [2], 3]
+    , 'apple': true
+    , 'bottle': undefined
+    };
+
+    schema = {
+      '': 'mixed'
+    };
+
+    test.ok(Belt.equal(Belt.objSchema(obj, schema), {
+      'cat': {
+        'mcdonalds': {
+          'bigmac': [1, 2, 3]
+        }
+      }
+    , 'frog': 'ok'
+    , 'dog': [1, [2], 3]
+    , 'apple': true
+    , 'bottle': undefined
+    }));
+
+    obj = {
+      'cat': {
+        'mcdonalds': {
+          'bigmac': [1, 2, 3]
+        }
+      }
+    , 'frog': 'ok'
+    , 'dog': [1, [2], 3]
+    , 'apple': true
+    , 'bottle': undefined
+    };
+
+    schema = {
+      'cat': 'mixed'
+    };
+
+    test.ok(Belt.equal(Belt.objSchema(obj, schema), {
+      'cat': {
+        'mcdonalds': {
+          'bigmac': [1, 2, 3]
+        }
+      }
+    }));
 
     return test.done();
   }
