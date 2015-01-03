@@ -1084,6 +1084,11 @@ exports['unitTests'] = {
 
     test.ok(Belt.deepEqual(obj, obj2));
 
+    obj = {'h': ''};
+    obj2 = {};
+
+    test.ok(!Belt.equal(obj, obj2));
+
     return test.done();
   }
 , 'delete': function(test){
