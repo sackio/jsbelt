@@ -991,7 +991,7 @@ exports['unitTests'] = {
     obj = {
       'array': [1, 2, 3]
     , 'object': {'deep': {'object': [1, {'deeper': 'object'}, true, date]}}
-    , 'function': Belt.noop
+    , 'fuunction': Belt.noop
     , 'regex': new RegExp()
     , 'date': [date, date]
     };
@@ -1008,11 +1008,10 @@ exports['unitTests'] = {
       test.ok(Belt.deepEqual(fobj[k], Belt.get(obj, k)));
     }
 
-    test.ok(Belt.deepEqual(Object.keys(fobj), ['array.0', 'array.1', 'array.2', 'object.deep.object.0', 'object.deep.object.1.deeper'
-    , 'object.deep.object.2', 'object.deep.object.3', 'function', 'regex', 'date.0', 'date.1']));
+    test.ok(Belt.arrayIndifferent(Object.keys(fobj), ['array.0', 'array.1', 'array.2', 'object.deep.object.0', 'object.deep.object.1.deeper', 'object.deep.object.2', 'object.deep.object.3', 'fuunction', 'regex', 'date.0', 'date.1']));
 
     fobj = Belt.objFlatten(obj, {'stop_on_arrays': true});
-    test.ok(Belt.deepEqual(Object.keys(fobj), ['array', 'object', 'object.deep', 'object.deep.object', 'function', 'regex', 'date']));
+    test.ok(Belt.arrayIndifferent(Object.keys(fobj), ['array', 'object', 'object.deep', 'object.deep.object', 'fuunction', 'regex', 'date']));
 
     return test.done();
   }
@@ -1476,8 +1475,8 @@ exports['unitTests'] = {
 
     s = '';
 
-    test.ok(Belt.deepEqual(Belt.cast(s, 'object'), undefined));
-    test.ok(Belt.deepEqual(Belt.cast(s, 'array'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'object'), {}));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'array'), []));
     test.ok(Belt.deepEqual(Belt.cast(s, 'string'), s));
     test.ok(Belt.deepEqual(Belt.cast(s, 'number'), undefined));
     test.ok(Belt.deepEqual(Belt.cast(s, 'boolean'), false));
@@ -1502,8 +1501,8 @@ exports['unitTests'] = {
 
     s = 0;
 
-    test.ok(Belt.deepEqual(Belt.cast(s, 'object'), undefined));
-    test.ok(Belt.deepEqual(Belt.cast(s, 'array'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'object'), {}));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'array'), []));
     test.ok(Belt.deepEqual(Belt.cast(s, 'string'), '0'));
     test.ok(Belt.deepEqual(Belt.cast(s, 'number'), 0));
     test.ok(Belt.deepEqual(Belt.cast(s, 'boolean'), false));
@@ -1528,8 +1527,8 @@ exports['unitTests'] = {
 
     s = false;
 
-    test.ok(Belt.deepEqual(Belt.cast(s, 'object'), undefined));
-    test.ok(Belt.deepEqual(Belt.cast(s, 'array'), undefined));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'object'), {}));
+    test.ok(Belt.deepEqual(Belt.cast(s, 'array'), []));
     test.ok(Belt.deepEqual(Belt.cast(s, 'string'), 'false'));
     test.ok(Belt.deepEqual(Belt.cast(s, 'number'), 0));
     test.ok(Belt.deepEqual(Belt.cast(s, 'boolean'), false));
@@ -1669,6 +1668,159 @@ exports['unitTests'] = {
     test.ok(Belt.deepEqual(Belt.cast(s, 'function'), undefined));
     test.ok(Belt.deepEqual(Belt.cast(s, 'undefined'), undefined));
     test.ok(Belt.deepEqual(Belt.cast(s, 'null'), null));
+
+    return test.done();
+  }
+, 'sort': function(test){
+    test.ok(Belt.deepEqual(Belt.sort([3, 4, 2, 1]), [1, 2, 3, 4]));
+    test.ok(Belt.deepEqual(Belt.sort(['frog', 'cattle', 'picasso']), ['cattle', 'frog', 'picasso']));
+    test.ok(Belt.deepEqual(Belt.sort(['frog', 'cattle', 'picasso', 'birds'], 'length'), ['frog', 'birds', 'cattle', 'picasso']));
+
+    return test.done();
+  }
+, 'objSchema': function(test){
+    var schema = {
+      'cat': 'string'
+    , 'dog': 'number'
+    , 'frog': 'boolean'
+    };
+
+    var obj = {
+      'cat': 123
+    , 'frog': 'ok'
+    , 'dog': [1, [2], 3]
+    , 'apple': true
+    };
+
+    test.ok(Belt.equal(Belt.objSchema(obj, schema), {cat: '123', frog: true, dog: NaN}));
+
+    obj = {
+      'cat': 123
+    , 'frog': 'ok'
+    , 'dog': [1, [2], 3]
+    , 'apple': true
+    };
+
+    schema = {
+      'cat': 'string'
+    , 'dog': 'array'
+    , 'frog': 'boolean'
+    };
+
+    test.ok(Belt.equal(Belt.objSchema(obj, schema), {cat: '123', frog: true, dog: [1, [2], 3]}));
+
+    obj = {
+      'cat': {
+        'mcdonalds': {
+          'bigmac': [1, 2, 3]
+        }
+      }
+    , 'frog': 'ok'
+    , 'dog': [1, [2], 3]
+    , 'apple': true
+    };
+
+    schema = {
+      'cat': 'object'
+    , 'dog': 'array'
+    , 'frog': 'boolean'
+    };
+
+    test.ok(Belt.equal(Belt.objSchema(obj, schema), {cat: {
+      'mcdonalds': {
+        'bigmac': [1, 2, 3]
+      }
+    }, frog: true, dog: [1, [2], 3]}));
+
+    obj = {
+      'cat': {
+        'mcdonalds': {
+          'bigmac': [1, 2, 3]
+        }
+      }
+    , 'frog': 'ok'
+    , 'dog': [1, [2], 3]
+    , 'apple': true
+    };
+
+    schema = {
+      'cat.mcdonalds.bigmac': 'array'
+    , 'dog': 'array'
+    , 'frog': 'boolean'
+    };
+
+    test.ok(Belt.equal(Belt.objSchema(obj, schema), {cat: {
+      'mcdonalds': {
+        'bigmac': [1, 2, 3]
+      }
+    }, frog: true, dog: [1, [2], 3]}));
+
+    obj = {
+      'cat': {
+        'mcdonalds': {
+          'bigmac': [1, 2, 3]
+        }
+      }
+    , 'frog': 'ok'
+    , 'dog': [1, [2], 3]
+    , 'apple': true
+    };
+
+    schema = {
+      'cat.mcdonalds': 'object'
+    , 'dog': 'array'
+    , 'frog': 'boolean'
+    };
+
+    test.ok(Belt.equal(Belt.objSchema(obj, schema), {cat: {
+      'mcdonalds': {
+        'bigmac': [1, 2, 3]
+      }
+    }, frog: true, dog: [1, [2], 3]}));
+
+    obj = {
+      'cat': {
+        'mcdonalds': {
+          'bigmac': [1, 2, 3]
+        }
+      }
+    , 'frog': 'ok'
+    , 'dog': [1, [2], 3]
+    , 'apple': true
+    };
+
+    schema = {
+      'cat.mcdonalds': 'number'
+    , 'dog': 'array'
+    , 'frog': 'boolean'
+    };
+
+    test.ok(Belt.equal(Belt.objSchema(obj, schema), {cat: {
+      'mcdonalds': undefined
+    }, frog: true, dog: [1, [2], 3]}));
+
+    obj = {
+      'cat': {
+        'mcdonalds': {
+          'bigmac': [1, 2, 3]
+        }
+      }
+    , 'frog': 'ok'
+    , 'dog': [1, [2], 3]
+    , 'apple': true
+    };
+
+    schema = {
+      'cat.mcdonalds.bigmac': 'object'
+    , 'dog': 'array'
+    , 'frog': 'boolean'
+    };
+
+    test.ok(Belt.equal(Belt.objSchema(obj, schema), {cat: {
+      'mcdonalds': {
+        'bigmac': {0: 1, 1: 2, 2: 3}
+      }
+    }, frog: true, dog: [1, [2], 3]}));
 
     return test.done();
   }
