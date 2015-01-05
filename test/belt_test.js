@@ -915,12 +915,12 @@ exports['unitTests'] = {
     return test.done();
   }
 , 'isEmpty': function(test){
-    test.ok(!Belt.isEmpty(null));
-    test.ok(!Belt.isEmpty(undefined));
-    test.ok(!Belt.isEmpty(''));
-    test.ok(!Belt.isEmpty(false));
-    test.ok(!Belt.isEmpty(0));
-    test.ok(!Belt.isEmpty(true));
+    test.ok(Belt.isEmpty(null));
+    test.ok(Belt.isEmpty(undefined));
+    test.ok(Belt.isEmpty(''));
+    test.ok(Belt.isEmpty(false));
+    test.ok(Belt.isEmpty(0));
+    test.ok(Belt.isEmpty(true));
     test.ok(Belt.isEmpty({}));
     test.ok(Belt.isEmpty([]));
     test.ok(!Belt.isEmpty([1, 2, 3]));
