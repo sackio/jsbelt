@@ -2035,6 +2035,20 @@ exports['unitTests'] = {
       }
     }));
 
+    obj = [1, 2, 3];
+    schema = {
+      '': 'array'
+    };
+
+    test.ok(Belt.equal(Belt.objSchema(Belt.copy(obj), schema), obj));
+
+    obj = {'object': [1, 2, 3]};
+    schema = {
+      'object': 'array'
+    };
+
+    test.ok(Belt.equal(Belt.objSchema(Belt.copy(obj), schema), obj));
+
     return test.done();
   }
 };
