@@ -2051,4 +2051,12 @@ exports['unitTests'] = {
 
     return test.done();
   }
+, 'more-deepEquals-2': function(test){
+    var obj = {'name': '', 'dog': [{'breed': "lab", name: ""}]}
+      , obj2 = {'name': '', 'dog': [{name: "", 'breed': "lab"}]};
+
+    test.ok(Belt.equal(obj, obj2));
+
+    return test.done();
+  }
 };
