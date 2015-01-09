@@ -2059,4 +2059,46 @@ exports['unitTests'] = {
 
     return test.done();
   }
+, 'objIndex': function(test){
+    var obj = {'dog': true, 'cat': false, 'frog': 'pie'};
+
+    test.ok(Belt.objIndex(obj, 0) === 'dog');
+    test.ok(Belt.objIndex(obj, 2) === 'frog');
+    test.ok(Belt.objIndex(obj, 1323) === undefined);
+
+    test.ok(Belt.objIndex(obj, 0, true) === true);
+    test.ok(Belt.objIndex(obj, 2, true) === 'pie');
+    test.ok(Belt.objIndex(obj, 1323, true) === undefined);
+
+    test.ok(Belt.objIndex(undefined, 0, true) === undefined);
+    test.ok(Belt.objIndex(undefined, 0) === undefined);
+
+    return test.done();
+  }
+, 'deepMatch': function(test){
+    var obj = {
+      'cat': {
+        'mcdonalds': {
+          'bigmac': [1, 2, 3]
+        }
+      }
+    , 'frog': 'ok'
+    , 'dog': [1, [2], 3]
+    , 'apple': true
+    , 'bottle': undefined
+    };
+
+    test.ok(Belt.equal(Belt.match(obj, 'dog.$$.$$'), {'dog.1.0': 2}));
+    test.ok(Belt.equal(Belt.match(obj, 'dog.$$.$$.'), {}));
+    test.ok(Belt.equal(Belt.match(obj, 'dog.$$.$$s'), {}));
+    test.ok(Belt.equal(Belt.match(obj, '^dog.$$.$$$'), {'dog.1.0': 2}));
+    test.ok(Belt.equal(Belt.match(obj, '^dog.$$$'), {'dog.0': 1, 'dog.1': [2], 'dog.2': 3}));
+    test.ok(Belt.equal(Belt.match(obj, '^dog.$$'), {'dog.0': 1, 'dog.1': [2], 'dog.2': 3, 'dog.1.0': 2}));
+    test.ok(Belt.equal(Belt.match(obj, '^dog.1.0'), {'dog.1.0': 2}));
+
+    test.ok(Belt.equal(Belt.match(obj, ''), {'': obj}));
+    test.ok(Belt.equal(Belt.match(obj, '^(dog|frog)$'), {'dog': obj.dog, 'frog': 'ok'}));
+
+    return test.done();
+  }
 };
