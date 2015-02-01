@@ -2159,4 +2159,45 @@ exports['unitTests'] = {
 
     return test.done();
   }
+, 'callloop': function(test){
+    var count = 0
+      , func = function(cb){
+          return cb(count++ < 6 ? new Error(count - 1) : undefined, 'dog');
+        };
+
+    return Belt.clp({'meth': func, 'int': 100}, function(err, dog){
+      test.ok(!err);
+      test.ok(count === 7);
+      test.ok(dog === 'dog');
+      return test.done();
+    });
+  }
+, 'callloop-2': function(test){
+    var count = 0
+      , func = function(animal, cb){
+          test.ok(animal === 'frog');
+          return cb('dog', count++ < 6 ? new Error(count - 1) : undefined, 'dog');
+        };
+
+    return Belt.clp({'meth': func, 'int': 100, 'eind': 1, 'args': ['frog']}, function(dog, err){
+      test.ok(!err);
+      test.ok(count === 7);
+      test.ok(dog === 'dog');
+      return test.done();
+    });
+  }
+, 'callloop-3': function(test){
+    var count = 0
+      , func = function(animal, cb){
+          test.ok(animal === 'frog');
+          return cb('dog', count++ < 6 ? new Error(count - 1) : undefined, 'dog');
+        }
+      , gb = {};
+
+    return Belt.clp({'meth': func, 'int': 100, 'eind': 1, 'args': ['frog']}, Belt.cs(function(err){
+      test.ok(!err);
+      test.ok(gb.result === 'dog');
+      return test.done();
+    }, gb, 'result', 0, 1));
+  }
 };
