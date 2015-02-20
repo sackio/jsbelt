@@ -787,7 +787,8 @@ exports['unitTests'] = {
 
     test.ok(obj.dog === 'puppy');
     test.ok(obj.cat === 'kitten');
-    test.ok(Belt.deepEqual(obj.lion, ['simba', 'mufasa', 'scar']));
+    //test.ok(Belt.deepEqual(obj.lion, ['simba', 'mufasa', 'scar']));
+    test.ok(Belt.deepEqual(obj.lion, ['scar', 'mufasa']));
 
     obj = Belt.deepMerge({'dog': 'puppy', 'lion': {'names': 'simba'}}, {'cat': 'kitten', 'lion': {'frog': 'tadpole'}});
     test.ok(obj.dog === 'puppy');
@@ -796,10 +797,12 @@ exports['unitTests'] = {
     test.ok(obj.lion.frog === 'tadpole');
 
     obj = Belt.deepMerge({'dog': 'puppy', 'lion': {'names': ['simba']}}, {'cat': 'kitten', 'lion': {'names': ['mufasa'], 'frog': 'tadpole'}});
-    test.ok(Belt.deepEqual(obj.lion.names, ['simba', 'mufasa']));
+    //test.ok(Belt.deepEqual(obj.lion.names, ['simba', 'mufasa']));
+    test.ok(Belt.deepEqual(obj.lion.names, ['mufasa']));
 
     obj = Belt.deepMerge(['dog', 'puppy'], ['cat', 'kitten', 'lion', {'frog': 'tadpole'}]);
-    test.ok(Belt.deepEqual(obj, ['dog', 'puppy', 'cat', 'kitten', 'lion', {frog: 'tadpole' }]));
+    //test.ok(Belt.deepEqual(obj, ['dog', 'puppy', 'cat', 'kitten', 'lion', {frog: 'tadpole' }]));
+    test.ok(Belt.deepEqual(obj, ['cat', 'kitten', 'lion', {frog: 'tadpole' }]));
 
     obj = Belt.deepMerge({'dog': 'puppy'}, ['cat', 'kitten', 'lion', {'frog': 'tadpole'}]);
     test.ok(Belt.deepEqual(obj, {'0': 'cat', '1': 'kitten',  '2': 'lion',  '3': { frog: 'tadpole' },  dog: 'puppy' }));
