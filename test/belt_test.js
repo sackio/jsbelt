@@ -1070,6 +1070,11 @@ exports['unitTests'] = {
     test.ok(Belt.chain.apply(Belt, [obj, ['isGood']]) === 'good');
     test.ok(Belt.chain.apply(Belt, [obj, ['isGood', undefined]]) === 'good');
 
+    obj = {'val': function(val){ return val; }};
+    var obj2 = [1, 2, {'frog': function(val){ return val; }}];
+
+    test.ok(Belt.chain(obj, ['val', obj2], '2', ['frog', '123']) === '123');
+
     return test.done();
   }
 , 'more-deepEquals': function(test){
