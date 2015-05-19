@@ -2208,4 +2208,23 @@ exports['unitTests'] = {
       return test.done();
     }, gb, 'result', 0, 1));
   }
+, 'random_string': function(test){
+    var rand_string = Belt.random_string(233);
+    test.ok(rand_string.length === 233);
+    test.ok(rand_string !== Belt.random_string(233));
+    rand_string = Belt.random_string(233, 'acgt');
+    rand_string.split('').forEach(function(e){ return test.ok(e.match(/^(a|g|c|t)$/)); });
+    rand_string = Belt.random_string(2, 'acgt');
+    test.ok(rand_string.length === 2);
+    return test.done();
+  }
+, 'random_int': function(test){
+    var rint = Belt.random_int(8, 17);
+    test.ok(rint >= 8 && rint < 17);
+    for (var i = 0; i < 1000; i++){
+      rint = Belt.random_int(8, 17);
+      test.ok(rint >= 8 && rint < 17);
+    }
+    return test.done();
+  }
 };
