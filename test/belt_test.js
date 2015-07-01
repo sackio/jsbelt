@@ -1569,6 +1569,10 @@ exports['unitTests'] = {
     test.ok(Belt.deepEqual(Belt.cast(s, 'undefined'), undefined));
     test.ok(Belt.deepEqual(Belt.cast(s, 'null'), null));
 
+    test.ok(Belt.deepEqual(Belt.cast('true', 'boolean'), true));
+    test.ok(Belt.deepEqual(Belt.cast('false', 'boolean'), false));
+    test.ok(Belt.deepEqual(Belt.cast('', 'boolean'), false));
+
     s = '';
 
     test.ok(Belt.deepEqual(Belt.cast(s, 'object'), {}));
@@ -2225,6 +2229,31 @@ exports['unitTests'] = {
       rint = Belt.random_int(8, 17);
       test.ok(rint >= 8 && rint < 17);
     }
+    return test.done();
+  }
+, 'arrayCast': function(test){
+    var arr = [1, 'a', [1, 2, 3], {a: 'b'}, undefined, true, new Date()];
+
+    Belt.arrayCast(arr, 'string').forEach(function(e){ test.ok(Belt.typeof(e) === 'string'); });
+    return test.done();
+  }
+, 'objCast': function(test){
+    var _o = {'a': 1, 'b': 'a', 'c': [1, 2, 3], 'd': {a: 'b'}, 'e': undefined, 'f': true, 'g': new Date()};
+
+    var obj = Belt.objCast(_o, 'string');
+
+    for (var k in obj){ test.ok(Belt.typeof(obj[k]) === 'string'); }
+    return test.done();
+  }
+, 'findProp': function(test){
+    var arr = [
+      {'name': 'moe'}
+    , {'name': 'curly'}
+    , {'name': 'larry'}
+    ];
+
+    test.ok(Belt.equal({'name': 'moe'}, Belt.find(arr, 'moe', {'path': 'name'})));
+
     return test.done();
   }
 };
