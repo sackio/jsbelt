@@ -2256,4 +2256,14 @@ exports['unitTests'] = {
 
     return test.done();
   }
+, 'arrayCombinations': function(test){
+    var arr1 = [0, 1]
+      , arr2 = ['a', 'b', 'c', 'd']
+      , arr3 = [true, false, null, undefined]
+    ;
+
+    test.ok(Belt.arrayCombinations(arr1, arr2, arr3).length === 32);
+
+    return test.done();
+  }
 };
