@@ -2266,4 +2266,11 @@ exports['unitTests'] = {
 
     return test.done();
   }
+, 'arrayCombinationsOfSize': function(test){
+    var arr = ['a', 'b', 'c', 'd'];
+
+    test.ok(Belt.arrayCombinationsOfSize(arr, 2).length === 6);
+
+    return test.done();
+  }
 };
