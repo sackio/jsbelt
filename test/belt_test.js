@@ -193,7 +193,9 @@ exports['unitTests'] = {
     test.ok(Belt.deepProp(obj, 'deep.0.copy') === 1);
     test.ok(Belt.deepProp(obj, 'deep.1') === 2);
     test.ok(!Belt.deepProp(obj, 'does.not.exist'));
+
     test.ok(Belt.deepProp(obj, '.deep.1') === 2);
+
     //test.ok(!Belt.deepProp(obj, '.deep.1.'));
     test.ok(Belt.deepEqual(Belt.deepProp(obj), obj));
 
@@ -267,7 +269,7 @@ exports['unitTests'] = {
 
     return test.done();
   }
-, 'deepFind': function(test) {
+/*, 'deepFind': function(test) {
     test.expect(10);
     var t = {'deep': {'find': 'this'}};
 
@@ -283,7 +285,7 @@ exports['unitTests'] = {
     test.ok(!Belt._find('foobar', 'something.else.here'));
 
     return test.done();
-  }
+  }*/
 , 'sequence': function(test) {
     test.expect(6);
 
@@ -834,7 +836,7 @@ exports['unitTests'] = {
 
     return test.done();
   }
-, 'setDeepArray': function(test){
+/*, 'setDeepArray': function(test){
     var test_name = 'setDeepArray';
 
     var obj = 'locations.[].label.home';
@@ -858,7 +860,7 @@ exports['unitTests'] = {
     test.ok(Belt.deepEqual(obj, {'locations': [undefined, undefined, undefined, {'label': {'-2': {'apple': 'hello'}}}]}));
 
     return test.done();
-  }
+  }*/
 , 'isNumber': function(test){
     test.ok(Belt.isNumber(60));
     test.ok(Belt.isNumber(60.12));
@@ -2113,22 +2115,22 @@ exports['unitTests'] = {
 
     return test.done();
   }
-, 'psplit and pescape': function(test){
+, 'epsplit and pescape': function(test){
     var path = 'j.j.j.j';
-    test.ok(Belt.equal(Belt.psplit(path), ['j', 'j', 'j', 'j']));
+    test.ok(Belt.equal(Belt.esplit(path, '.'), ['j', 'j', 'j', 'j']));
 
     path = 'j\\.j.j.j';
-    test.ok(Belt.equal(Belt.psplit(path), ['j.j', 'j', 'j']));
+    test.ok(Belt.equal(Belt.esplit(path, '.'), ['j.j', 'j', 'j']));
 
     path = 'j\\..j.j.j';
-    test.ok(Belt.equal(Belt.psplit(path), ['j.', 'j', 'j', 'j']));
+    test.ok(Belt.equal(Belt.esplit(path, '.'), ['j.', 'j', 'j', 'j']));
 
     path = '';
-    test.ok(Belt.equal(Belt.psplit(path), ['']));
+    test.ok(Belt.equal(Belt.esplit(path, '.'), ['']));
 
     path = '\\.\\.';
-    test.ok(Belt.equal(Belt.psplit(path), ['..']));
-
+    test.ok(Belt.equal(Belt.esplit(path, '.'), ['..']));
+/*
     path = '....';
     test.ok(Belt.pescape(path) === '\\.\\.\\.\\.');
 
@@ -2137,6 +2139,10 @@ exports['unitTests'] = {
 
     path = '.\\..\\.';
     test.ok(Belt.pescape(path) === '\\.\\.\\.\\.');
+*/
+
+    path = 'j\\,,j,j,j';
+    test.ok(Belt.equal(Belt.esplit(path, ','), ['j,', 'j', 'j', 'j']));
 
     return test.done();
   }
@@ -2270,6 +2276,218 @@ exports['unitTests'] = {
     var arr = ['a', 'b', 'c', 'd'];
 
     test.ok(Belt.arrayCombinationsOfSize(arr, 2).length === 6);
+
+    return test.done();
+  }
+, 'get with arrays': function(test){
+    var arr = {
+      'foo': [
+        'bar'
+      , {
+          'bar': 'baz'
+        }
+      , [
+          {'foo': 'bar'}
+        , true
+        ]
+      ]
+    };
+
+    test.ok(Belt.equal(Belt.get(arr, 'foo.[].bar'), [ undefined, 'baz', undefined ]));
+
+    arr = [
+      {'deep': {'object': 1}}
+     , {'deep': {'object': 2}}
+     , {'deep': {'object': [{'object': 1}, {'object': 2}, {'object': 3}]}}
+    ];
+
+    test.ok(Belt.equal([ 1, 2, [ { object: 1 }, { object: 2 }, { object: 3 } ] ], Belt.get(arr, '[].deep.object')));
+    test.ok(Belt.get(arr, '[].deep.object.[].object.[].object'), [undefined, undefined, [1, 2, 3]]);
+
+    return test.done();
+  }
+, 'get with objects': function(test){
+    var obj = {
+      'a': {
+        'd': [1, 2, 3]
+      , 'e': [1, 2, 3]
+      , 'f': [1, 2, 3]
+      }
+    , 'b': {
+        'd': [1, 2, 3]
+      , 'e': [1, 2, 3]
+      , 'f': [1, 2, 3]
+      }
+    , 'c': {
+        'd': [1, 2, 3]
+      , 'e': [1, 2, 3]
+      , 'f': [1, 2, 3]
+      }
+    };
+
+    test.ok(Belt.equal(Belt.get(obj, '{}.{}.1'), { a: { d: 2, e: 2, f: 2 },  b: { d: 2, e: 2, f: 2 },  c: { d: 2, e: 2, f: 2 } }));
+    test.ok(Belt.equal(Belt.get(obj, '{}.e.[]'), { a: [ 1, 2, 3 ], b: [ 1, 2, 3 ], c: [ 1, 2, 3 ] }));
+
+    return test.done();
+  }
+, 'get with functions': function(test){
+    var obj = {
+      'a': {
+        'b': 'foob,a,r'
+      }
+    };
+
+    test.ok(Belt.get(obj, 'a.b.eval(#\\.split(/o+/))'), [ 'f', 'b,a,r' ]);
+    test.ok(Belt.get(obj, 'a.b.split(/o+/).[].split(",")'), [ 'f', ['b','a','r'] ]);
+    test.ok(Belt.get(obj, 'a.b.split(/o+/).[].split(",").split("")'), [undefined, undefined]);
+
+    return test.done();
+  }
+, 'special set': function(test){
+    var obj = {
+      'a': {
+        'b': [1, 2, 3]
+      }
+    };
+
+    test.ok(Belt.equal(Belt.set(obj, 'a.b.[]', 6), { a: { b: [ 6, 6, 6 ] } }));
+
+    obj = {
+      'a': {
+        'b': [
+          {
+            'd': true
+          }
+        , {
+            'f': true
+          }
+        ]
+      }
+    };
+
+    test.ok(Belt.equal(Belt.set(obj, 'a.b.[].c', 'q'), {
+  "a": {
+    "b": [
+      {
+        "d": true,
+        "c": "q"
+      },
+      {
+        "f": true,
+        "c": "q"
+      }
+    ]
+  }
+}
+));
+
+    obj = {
+      'a': {
+        'b': [
+          {
+            'd': {
+              'g': [1, 2, 3]
+            , 'h': [1, 2, 3]
+            }
+          }
+        , {
+            'f': {
+              'g': [1, 2, 3]
+            , 'h': [1, 2, 3]
+            }
+          }
+        ]
+      }
+    };
+
+    test.ok(Belt.equal(Belt.set(obj, 'a.b.[].{}.{}.1', 6), {
+  "a": {
+    "b": [
+      {
+        "d": {
+          "g": [
+            1,
+            6,
+            3
+          ],
+          "h": [
+            1,
+            6,
+            3
+          ]
+        }
+      },
+      {
+        "f": {
+          "g": [
+            1,
+            6,
+            3
+          ],
+          "h": [
+            1,
+            6,
+            3
+          ]
+        }
+      }
+    ]
+  }
+}
+));
+
+    return test.done();
+  }
+, 'transform': function(test){
+    var obj = {
+      'a': {
+        'b': [1, 2, 3]
+      }
+    };
+
+    Belt.transform(obj, 'a.b.[]', function(i){ return Belt.cast(i, 'string'); });
+    test.ok(Belt.equal(obj, { a: { b: [ '1', '2', '3' ] } }));
+
+    obj = {
+      'a': {
+        'b': [1, false, 0, true]
+      }
+    };
+
+    Belt.transform(obj, 'a.b', Belt.arrayDefalse);
+    test.ok(Belt.equal(obj, { a: { b: [ 1, true] } }));
+
+    obj = {
+      'a': {
+        'b': [1, 2, 3]
+      }
+    };
+
+    Belt.deepCast(obj, 'a.b.[]', 'string');
+    test.ok(Belt.equal(obj, { a: { b: [ '1', '2', '3' ] } }));
+
+    return test.done();
+  }
+, 'objSanitize': function(test){
+
+    var obj = {
+      'name': 'john'
+    , 'password': 'secret'
+    , 'kids': [
+        {
+          'name': 'jane'
+        , 'password': 'secret'
+        }
+      , {
+          'name': 'marsha'
+        , 'password': 'secret'
+        }
+      , {
+          'name': 'bart'
+        , 'password': 'secret'
+        }
+      ]
+    };
 
     return test.done();
   }
