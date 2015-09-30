@@ -2495,26 +2495,11 @@ exports['unitTests'] = {
 
     return test.done();
   }
-, 'objSanitize': function(test){
-
-    var obj = {
-      'name': 'john'
-    , 'password': 'secret'
-    , 'kids': [
-        {
-          'name': 'jane'
-        , 'password': 'secret'
-        }
-      , {
-          'name': 'marsha'
-        , 'password': 'secret'
-        }
-      , {
-          'name': 'bart'
-        , 'password': 'secret'
-        }
-      ]
-    };
+, 'isError': function(test){
+    test.ok(Belt.isError(new Error()));
+    test.ok(!Belt.isError(null));
+    test.ok(!Belt.isError({}));
+    test.ok(!Belt.isError());
 
     return test.done();
   }
