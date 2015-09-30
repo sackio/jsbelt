@@ -2466,6 +2466,33 @@ exports['unitTests'] = {
     Belt.deepCast(obj, 'a.b.[]', 'string');
     test.ok(Belt.equal(obj, { a: { b: [ '1', '2', '3' ] } }));
 
+    obj = {
+      'location': {
+        'coordinates': [
+        1, 2//  'longitude': 1213
+        //, 'latitude': 2323
+        ]
+      }
+    };
+
+    test.ok(Belt.equal({
+  "location": {
+    "coordinates": {
+      "0": "1",
+      "1": "2"
+    }
+  }
+}, Belt.deepCast(obj, 'location.coordinates.{}', 'string')));
+
+    obj = {
+      'location': {
+        'coordinates': [
+        1, 2//  'longitude': 1213
+        //, 'latitude': 2323
+        ]
+      }
+    };
+
     return test.done();
   }
 , 'objSanitize': function(test){
