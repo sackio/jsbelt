@@ -2503,4 +2503,22 @@ exports['unitTests'] = {
 
     return test.done();
   }
+, 'equalDates': function(test){
+
+    var date1 = new Date();
+
+    setTimeout(function(){
+      var date2 = new Date();
+
+      test.ok(!Belt.equal(date1, date2));
+      test.ok(Belt.equal(date1, date1));
+      return test.done();
+    }, 200);
+  }
+, 'arrayPermutations': function(test){
+
+    test.ok(true);
+
+    return test.done();
+  }
 };
