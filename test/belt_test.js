@@ -2515,10 +2515,29 @@ exports['unitTests'] = {
       return test.done();
     }, 200);
   }
-, 'arrayPermutations': function(test){
+, 'deep cs': function(test) {
+    //test.expect(9);
 
-    test.ok(true);
+    var globals = {};
 
-    return test.done();
+    return Async.waterfall([
+      function(cb){
+        return Belt.cs(cb, globals, 'first.monkey', 0, 'foo.bar')({'foo': {'bar': 'baz'}}, 2, 3);
+      }
+    , function(cb){
+        test.ok(globals.first.monkey === 'baz');
+        return cb();
+      }
+    , function(cb){
+        return Belt.cs(cb, globals, 'first.elephant', 0, 'foo.bar.0.test')({'foo': {'bar': 'baz'}}, 2, 3);
+      }
+    , function(cb){
+        test.ok(!globals.first.elephant);
+        return cb();
+      }
+    ], function(err){
+     test.ok(!err);
+     return test.done();
+    });
   }
 };
