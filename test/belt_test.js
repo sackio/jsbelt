@@ -1780,7 +1780,7 @@ exports['unitTests'] = {
 
     return test.done();
   }
-, 'objSchema': function(test){
+/*, 'objSchema': function(test){
     var obj, schema;
 
     schema = {
@@ -2072,7 +2072,7 @@ exports['unitTests'] = {
     test.ok(Belt.equal(obj, obj2));
 
     return test.done();
-  }
+  }*/
 , 'objIndex': function(test){
     var obj = {'dog': true, 'cat': false, 'frog': 'pie'};
 
@@ -2539,5 +2539,93 @@ exports['unitTests'] = {
      test.ok(!err);
      return test.done();
     });
+  }
+, 'deep delete': function(test){
+    var o = {
+      'location': {
+        'coordinates': [
+          1, 2
+        ]
+      }
+    };
+
+    test.ok(Belt.equal(Belt.delete(o, 'location.coordinates.[]'), { location: { coordinates: [] } }));
+    test.ok(Belt.equal(o, { location: { coordinates: [] } }));
+
+    o = {
+      'location': {
+        'coordinates': [
+          1, 2
+        ]
+      }
+    };
+
+    test.ok(Belt.equal(Belt.delete(o, 'location.coordinates.0'), { location: { coordinates: [2] } }));
+    test.ok(Belt.equal(o, { location: { coordinates: [2] } }));
+
+    o = {
+      "location": {
+        "coordinates": {
+          "0": "1",
+          "1": "2"
+        }
+      }
+    };
+
+    test.ok(Belt.equal(Belt.delete(o, 'location.coordinates.{}'), { location: { coordinates: {} } }));
+    test.ok(Belt.equal(o, { location: { coordinates: {} } }));
+
+    o = {
+      "location": {
+        "coordinates": {
+          "0": "1",
+          "1": "2"
+        }
+      }
+    };
+
+    test.ok(Belt.equal(Belt.delete(o, 'location.coordinates'), { location: {} }));
+    test.ok(Belt.equal(o, { location: {} }));
+
+    o = {
+      "location": {
+        "coordinates": {
+          "0": "1",
+          "1": "2"
+        }
+      }
+    };
+
+    test.ok(Belt.equal(Belt.delete(o, 'location.coordinates.1'), { location: { coordinates: {0: "1"} } }));
+    test.ok(Belt.equal(o, { location: { coordinates: {0: "1"} } }));
+   
+    o = {
+      'a': {
+        'b': [1, false, 0, true]
+      }
+    };
+
+    test.ok(Belt.equal(Belt.delete(o, 'a'), {}));
+    test.ok(Belt.equal(o, {}));
+
+    o = [
+      {'deep': {'object': 1}}
+    , {'deep': {'object': 2}}
+    , {'deep': {'object': [{'object': 1}, {'object': 2}, {'object': 3}]}}
+    ];
+
+    test.ok(Belt.equal(Belt.delete(o, '[].deep.object.1'), [
+      {'deep': {'object': 1}}
+    , {'deep': {'object': 2}}
+    , {'deep': {'object': [{'object': 1}, {'object': 3}]}}
+    ]));
+
+    test.ok(Belt.equal(o, [
+      {'deep': {'object': 1}}
+    , {'deep': {'object': 2}}
+    , {'deep': {'object': [{'object': 1}, {'object': 3}]}}
+    ]));
+
+    return test.done();
   }
 };
