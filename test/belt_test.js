@@ -39,8 +39,6 @@ exports['unitTests'] = {
     });
   }
 , 'callset': function(test) {
-    test.expect(9);
-
     var globals = {};
 
     return Async.waterfall([
@@ -84,6 +82,22 @@ exports['unitTests'] = {
           test.ok(globals.set_index === 2);
 
           return cb();
+        });
+      }
+    , function(cb){
+        return Belt.cw(function(err){
+          test.ok(err === 'an error');
+          return cb();
+        }, 0, 'error')({
+          'error': 'an error'
+        });
+      }
+    , function(cb){
+        return Belt.cw(function(err){
+          test.ok(!err);
+          return cb();
+        }, 0, 'no_error')({
+          'error': 'an error'
         });
       }
     ], function(err){
