@@ -100,6 +100,25 @@ exports['unitTests'] = {
           'error': 'an error'
         });
       }
+    , function(cb){
+        return Belt.cs(function(err){
+          test.ok(!err);
+          test.ok(globals.data === 'data');
+          return cb();
+        }, globals, 'data', 0, 'data', 0, 'error')({
+          'error': false
+        , 'data': 'data'
+        });
+      }
+    , function(cb){
+        return Belt.cs(function(err){
+          test.ok(err);
+          return cb();
+        }, globals, 'data', 0, 'data', 0, 'error')({
+          'error': true
+        , 'data': 'data'
+        });
+      }
     ], function(err){
      test.ok(!err);
      return test.done();
@@ -2641,5 +2660,40 @@ exports['unitTests'] = {
     ]));
 
     return test.done();
+  }
+, 'arrayed cs': function(test) {
+    test.expect(7);
+
+    var gb = {};
+
+    return Async.waterfall([
+      function(cb){
+        return Belt.cs([
+          [cb, gb, 'first.monkey', 0, 'foo.bar']
+        , [cb, gb, 'first.elephant', 0, 'foo.bar']
+        , [cb, gb, 'second', 1]
+        ])({'foo': {'bar': 'baz'}}, 2, 3);
+      }
+    , function(cb){
+        test.ok(gb.first.monkey === 'baz');
+        test.ok(gb.first.elephant === 'baz');
+        test.ok(gb.second === 2);
+
+        gb = {};
+
+        return Belt.cs([
+          [cb, gb, 'first.monkey', 0, 'foo.bar']
+        , [cb, gb, 'first.elephant', 0, 'foo.bar', 1]
+        , [cb, gb, 'second', 1]
+        ])({'foo': {'bar': 'ba'}}, 2, 3);
+      }
+    ], function(err){
+     test.ok(err);
+     test.ok(gb.first.monkey === 'ba');
+     test.ok(gb.first.elephant === 'ba');
+     test.ok(gb.second !== 2);
+
+     return test.done();
+    });
   }
 };
