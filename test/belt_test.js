@@ -2696,4 +2696,24 @@ exports['unitTests'] = {
      return test.done();
     });
   }
+, 'arrayed cs - nested error': function(test) {
+
+    var gb = {};
+
+    return Async.waterfall([
+      function(cb){
+        return Belt.cs([
+          [cb, gb, 'first.monkey', 0, 'foo.bar', 0, 'foo.bar.baloons']
+        , [cb, gb, 'first.elephant', 0, 'foo.bar', 0, 'foo.bar']
+        ])({'foo': {'bar': 'baz'}}, 2, 3);
+      }
+    ], function(err){
+     test.ok(err);
+     test.ok(err === 'baz');
+     test.ok(gb.first.monkey === 'baz');
+     test.ok(gb.first.elephant === 'baz');
+
+     return test.done();
+    });
+  }
 };
