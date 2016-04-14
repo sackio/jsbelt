@@ -15,4 +15,5 @@
   "laxcomma": true,
   "laxbreak": true,
   "loopfunc": true
+, "globals": {"window": false}
 }
