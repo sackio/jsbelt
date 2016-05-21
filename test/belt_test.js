@@ -2716,4 +2716,24 @@ exports['unitTests'] = {
      return test.done();
     });
   }
+, 'arrayed cs - nested error 2': function(test) {
+
+    var gb = {};
+
+    return Async.waterfall([
+      function(cb){
+        return Belt.cs([
+          [cb, gb, 'first.elephant', 0, 'foo.bar', 0, 'foo.boo']
+        , [cb, gb, 'first.monkey', 0, 'foo.bar', 0, 'foo.bar']
+        ])({'foo': {'bar': 'baz', 'boo': 'blaz'}}, 2, 3);
+      }
+    ], function(err){
+     test.ok(err);
+     test.ok(err === 'blaz');
+     test.ok(!gb.first.monkey);
+     test.ok(gb.first.elephant === 'baz');
+
+     return test.done();
+    });
+  }
 };
