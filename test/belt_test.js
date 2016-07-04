@@ -2276,14 +2276,6 @@ exports['unitTests'] = {
     Belt.arrayCast(arr, 'string').forEach(function(e){ test.ok(Belt.typeof(e) === 'string'); });
     return test.done();
   }
-, 'objCast': function(test){
-    var _o = {'a': 1, 'b': 'a', 'c': [1, 2, 3], 'd': {a: 'b'}, 'e': undefined, 'f': true, 'g': new Date()};
-
-    var obj = Belt.objCast(_o, 'string');
-
-    for (var k in obj){ test.ok(Belt.typeof(obj[k]) === 'string'); }
-    return test.done();
-  }
 , 'findProp': function(test){
     var arr = [
       {'name': 'moe'}
@@ -2735,5 +2727,42 @@ exports['unitTests'] = {
 
      return test.done();
     });
+  }
+, 'objCast': function(test){
+    var obj = {
+      'bool': 'false'
+    , 'number': '1'
+    , 'obj': '{}'
+    };
+
+    Belt.objCast(obj, {
+      'bool': 'boolean'
+    , 'number': 'number'
+    , 'obj': 'object'
+    });
+
+    test.ok(obj.bool === false);
+    test.ok(obj.number === 1);
+    test.ok(Belt.equal(obj.obj, {}));
+
+    obj = {
+      'bool': 'false'
+    , 'number': '1'
+    , 'obj': '{}'
+    , 'null': undefined
+    };
+
+    Belt.objCast(obj, {
+      'bool': 'boolean'
+    , 'number': 'number'
+    , 'obj': 'object'
+    , 'null': 'boolean'
+    }, {
+      'skip_null': true
+    });
+
+    test.ok(obj.null === undefined);
+
+    return test.done();
   }
 };
