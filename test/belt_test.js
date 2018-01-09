@@ -2764,5 +2764,25 @@ exports['unitTests'] = {
     test.ok(obj.null === undefined);
 
     return test.done();
+  },
+  'parse': function(test){
+    var objOk = {
+        first_name: 'bat',
+        last_name: 'man'
+    };
+
+    var objError = {
+        first_name: eval,
+        last_name: 'boom'
+    }
+
+    
+    var strObjOk = JSON.stringify(objOk),
+        strObjError = JSON.stringify(objError);
+    
+    test.ok(Belt.parse(strObjOk).first_name === objOk.first_name);
+    test.ok(Belt.parse(strObjError).first_name === undefined);
+
+    return test.done()
   }
 };
